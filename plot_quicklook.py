@@ -56,7 +56,6 @@ def plot_quicklook(df):
     ax['mcda'].set_yscale('log')
     ax['mcda'].set_ylabel(r'Size ($\mu m$)')
     cbar = fig.colorbar(p, ax=ax['mcda'])
-    # cbar.ax.set_ylabel('dN/dlogDp from miniCDA', rotation=90)
     cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$) miniCDA', rotation=90)
 
     p = ax['pop'].pcolormesh(grp_avg['datetime'],
