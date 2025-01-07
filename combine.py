@@ -57,5 +57,5 @@ for i, row in flight_time.iterrows():
     df_ = df_.reset_index(drop=True)
     save_time = df_.iloc[0].datetime.strftime("%Y%m%d.%H%M")
     df_.to_csv(
-            save_path + f'FMI.TBS.a1.' + save_time + '.csv', index=False)
+            save_path + 'FMI.TBS.a1.' + save_time + '.csv', index=False)
     print(f'File {save_time} saved')
