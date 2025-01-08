@@ -100,7 +100,7 @@ def preprocess_pops(file):
                     'PumpLife_hrs', ' BL_Start', ' TH_Mult', ' nbins', ' logmin', ' logmax',
                     ' Skip_Save', ' MinPeakPts', 'MaxPeakPts', ' RawPts'], axis=1)
     df = df.rename({' PartCon': 'N_conc_pops (1/ccm)', ' P': 'press_pops (hPa)',
-                    ' POPS_Flow': 'Flow_rate_pops (l/m)'}, axis=1)
+                    ' POPS_Flow': 'flow_rate_pops (l/m)'}, axis=1)
     return df
     
     
