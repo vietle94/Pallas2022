@@ -95,7 +95,7 @@ def preprocess_pops(file):
     df.columns = ['bin' + str(int(x[1:]) + 1) + '_pops (dN/dlogDp)' if re.search('b[0-9]+', x)
                    else x for x in df.columns]
 
-    df = df.drop([' Status', ' PartCt', ' BL', ' BLTH', ' STD', ' TofP', ' POPS_Flow', ' PumpFB', ' LDTemp', ' LaserFB',
+    df = df.drop([' Status', ' PartCt', ' BL', ' BLTH', ' STD', ' TofP', ' PumpFB', ' LDTemp', ' LaserFB',
                     ' LD_Mon', ' Temp', ' BatV', ' Laser_Current', ' Flow_Set',
                     'PumpLife_hrs', ' BL_Start', ' TH_Mult', ' nbins', ' logmin', ' logmax',
                     ' Skip_Save', ' MinPeakPts', 'MaxPeakPts', ' RawPts'], axis=1)
