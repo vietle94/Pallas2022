@@ -43,13 +43,19 @@ pop_binedges = '0.119552706	0.140894644	0.169068337	0.204226949	0.227523895	0.25
 pop_binedges = np.fromstring(pop_binedges, dtype=float, sep="\t")
 pop_midbin = (pop_binedges[1:] + pop_binedges[:-1])/2
 
-fig, ax = plt.subplots(1, 21, sharey=True, figsize=(10, 4))
-fig.subplots_adjust(wspace=0)
-for file, (i, ax_) in zip(glob.glob(data_path + '*.csv'),
-                     enumerate(ax.flatten())):
+fig, ax = plt.subplots(2, 21, sharey='row', sharex='col', figsize=(10, 6))
+fig.subplots_adjust(wspace=0, hspace=0)
+
+for file, ax0_, (i, ax_) in zip(glob.glob(data_path + '*.csv'),
+                          ax[0, :].flatten(),
+                          enumerate(ax[1, :].flatten())):
     df = pd.read_csv(file)
     df['datetime'] = pd.to_datetime(df['datetime'])
     df.replace(-9999.9, np.nan, inplace=True)
+
+    ax0_.plot(df['datetime'], df['N_conc_cpc(1/ccm)'], '.')
+    ax0_.grid()
+    ax0_.set_yscale('log')
 
     p = ax_.pcolormesh(df['datetime'],
                             pop_midbin,
@@ -61,7 +67,8 @@ for file, (i, ax_) in zip(glob.glob(data_path + '*.csv'),
     # ax_.set_xlabel(f"#{i+1}")
     ax_.set_xlabel(df.iloc[0].datetime.strftime('%d/%m\n %H:%M'), size=7)
 
-ax[0].set_ylabel(r'Size ($\mu m$)')
+ax[1, 0].set_ylabel(r'Size ($\mu m$)')
+ax[0, 0].set_ylabel(r'N_conc_cpc(1/ccm)')
 fig.colorbar(p, ax=ax, orientation='horizontal', label=r'dN/dlogDp ($cm^{-3}$)', aspect=50)
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/pops_ts.png", dpi=600,
             bbox_inches='tight')
