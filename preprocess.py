@@ -60,11 +60,31 @@ def preprocess_mcda(file, size):
     df[0] = pd.to_datetime(df[0], format="%Y%m%d%H%M%S")
     df = df.rename(columns={0: 'datetime', 513: 'pcount_mcda', 514: 'pm1_mcda',
                        515: 'pm25_mcda', 516: 'pm4_mcda', 517: 'pm10_mcda', 518: 'pmtot_mcda'})
+    
     for i in df.columns[1:-6]:
         df[i] = df[i].apply(int, base=16)
+    for i in df.columns[-6:]:
+        df[i] = df[i].astype(float)
+    # Calculate CDNC
+    df['Nd_mcda (1/ccm)'] = df.iloc[:, 1:257].sum(axis=1)/10/46.67
+    # Calculate LWC
+    conc_perbin = df.iloc[:, 1:257]/10/(2.8e-3/60)
+    lwc_perbin = (conc_perbin * 1e6 * np.pi / 6 * (mid_bin * 1e-6)**3)
+    df['LWC_mcda (g/m3)'] = lwc_perbin.sum(axis=1)
+    # Calculate MVD
+    p_lwc_perbin = (lwc_perbin/df['LWC_mcda (g/m3)'].values[:, np.newaxis])
+    cumsum_lwc_perbin = p_lwc_perbin.cumsum(axis=1)
+    imax = ((cumsum_lwc_perbin > 0.5).idxmax(axis=1)).to_numpy().astype(int)-1 # Pandas return the header index, so we need to convert it to integer
+    term1 = (0.5 - cumsum_lwc_perbin.to_numpy()[np.arange(len(cumsum_lwc_perbin)), imax-1])
+    term2 = p_lwc_perbin.to_numpy()[np.arange(len(p_lwc_perbin)), imax]
+    bi = mid_bin[imax]
+    bi1 = mid_bin[imax-1]
+    df['MVD_mcda (um)'] = bi1 + term1/(term2) * (bi - bi1)
+    # Calculate ED
+    df['ED_mcda (um)'] = 2 * ((conc_perbin * mid_bin**3).sum(axis=1))/((conc_perbin * mid_bin**2).sum(axis=1))
+    
     df.columns = ['bin' + str(x) + '_mcda (dN/dlogDp)' if re.search('^[0-9]+', str(x))
                   else x for x in df.columns]
-    
     for particle_size, each_dlog_bin in zip(df.columns[1:257], dlog_bin):
         df[particle_size] = df[particle_size] / each_dlog_bin / 10 / 46.67
 
