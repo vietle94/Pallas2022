@@ -29,9 +29,9 @@ mcda = pd.DataFrame({})
 for file in mcda_path:
     mcda_time = pd.to_datetime(file[-17:-9])
     if mcda_time < pd.Timestamp('20221003'):
-        df = preprocess.preprocess_mcda(file, 'water_0.6-40')
-    else:
         df = preprocess.preprocess_mcda(file, 'water_0.15-17')
+    else:
+        df = preprocess.preprocess_mcda(file, 'water_0.6-40')
     mcda = pd.concat([mcda, df], ignore_index=True)
 
 flight_time = pd.read_csv(
