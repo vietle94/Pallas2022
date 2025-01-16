@@ -6,11 +6,25 @@ import json
 with open('mcda_sizes.txt', 'r') as file: 
     mcda_sizes = json.loads(file.read())
 
-def height(p0, p, T):
+def calculate_height(p0, p1, T0, T1):
     R = 287.05
     g = 9.80665
-    height = R/g * (T + 273.15) * np.log(p0/p)
+    height = R/g * ((T0 + T1)/2 + 273.15) * np.log(p0/p1)
     return height
+
+def calculate_height_df(df, p, T):
+    df_height = df.copy()
+    df_height.dropna(subset=p, inplace=True)
+    height = np.zeros_like(df_height[p])
+    height[1:] = calculate_height(df_height[p][:-1].values,
+                                  df_height[p][1:].values,
+                                  df_height[T][:-1].values,
+                                  df_height[T][1:].values)
+    df_height['height'] = height
+    df['height'] = df_height['height']
+    df.replace({'height': np.nan}, 0, inplace=True)
+    df['height'] = df['height'].cumsum()
+    return df
 
 def preprocess_bme(file):
     df = pd.read_csv(file)
