@@ -51,6 +51,7 @@ def preprocess_mcda(file, size):
     # calculate size dlog_bin
     print(size)
     mid_bin = np.fromstring(mcda_sizes[size], dtype=float, sep="\t")
+    mid_bin = mid_bin[81:]
     binedges = np.append(np.append(
         mid_bin[0] - (- mid_bin[0] + mid_bin[1])/2,
         (mid_bin[:-1] + mid_bin[1:])/2),
@@ -59,40 +60,51 @@ def preprocess_mcda(file, size):
     
     # Load file
     df = pd.read_csv(file, skiprows=1, header=None, dtype=str)
-    df = df.iloc[:, np.r_[0:257, -6:0]]
+    df = df.iloc[:, np.r_[[0], 82:257, -6:0]]
     df = df.dropna(axis=0)
     df = df.reset_index(drop=True)
+    df.columns = np.arange(df.columns.size)
     df[0] = pd.to_datetime(df[0], format="%Y%m%d%H%M%S")
-    df = df.rename(columns={0: 'datetime', 513: 'pcount_mcda', 514: 'pm1_mcda',
-                       515: 'pm25_mcda', 516: 'pm4_mcda', 517: 'pm10_mcda', 518: 'pmtot_mcda'})
     
-    for i in df.columns[1:-6]:
-        df[i] = df[i].apply(int, base=16)
-    for i in df.columns[-6:]:
-        df[i] = df[i].astype(float)
+    df_bins_label = ['bin' + str(x) + '_mcda (dN/dlogDp)' for x in range(1, 176)]
+    df_pm_label = ['pcount_mcda', 'pm1_mcda', 'pm25_mcda', 'pm4_mcda', 'pm10_mcda', 'pmtot_mcda']
+    df.columns = np.r_[['datetime'],
+                       df_bins_label,
+                       df_pm_label]
+    df.iloc[:, 1:-6] = df.iloc[:, 1:-6].map(lambda x: int(x, base=16)) # Convert hex to int
+    df = df.set_index('datetime').astype('float').reset_index() # Convert to float
+    # Bin counts
+    df_bins = df.iloc[:, 1:176].copy().to_numpy().astype(float)
+    # Calculate dN/dlogDp
+    df.iloc[:, 1:176] = df.iloc[:, 1:176]/dlog_bin/10/46.67
     # Calculate CDNC
-    df['Nd_mcda (1/ccm)'] = df.iloc[:, 1:257].sum(axis=1)/10/46.67
+    df['Nd_mcda (1/ccm)'] = df_bins.sum(axis=1)/10/46.67
     # Calculate LWC
-    conc_perbin = df.iloc[:, 1:257]/10/(2.8e-3/60)
+    conc_perbin = df_bins/10/(2.8e-3/60)
     lwc_perbin = (conc_perbin * 1e6 * np.pi / 6 * (mid_bin * 1e-6)**3)
-    df['LWC_mcda (g/m3)'] = lwc_perbin.sum(axis=1)
+    lwc_sum = lwc_perbin.sum(axis=1)
+    df['LWC_mcda (g/m3)'] = lwc_sum
     # Calculate MVD
-    p_lwc_perbin = (lwc_perbin/df['LWC_mcda (g/m3)'].values[:, np.newaxis])
+    p_lwc_perbin = np.divide(lwc_perbin, lwc_sum[:, np.newaxis],
+                             out=np.zeros_like(lwc_perbin), where=lwc_sum[:, np.newaxis]!=0)
     cumsum_lwc_perbin = p_lwc_perbin.cumsum(axis=1)
-    imax = ((cumsum_lwc_perbin > 0.5).idxmax(axis=1)).to_numpy().astype(int)-1 # Pandas return the header index, so we need to convert it to integer
-    term1 = (0.5 - cumsum_lwc_perbin.to_numpy()[np.arange(len(cumsum_lwc_perbin)), imax-1])
-    term2 = p_lwc_perbin.to_numpy()[np.arange(len(p_lwc_perbin)), imax]
-    bi = mid_bin[imax]
-    bi1 = mid_bin[imax-1]
-    df['MVD_mcda (um)'] = bi1 + term1/(term2) * (bi - bi1)
+    cumsum_lwc_perbin[df_bins == 0] = np.nan
+    # find imin and imax, they contain the point where cumsum_lwc_perbin == 0.5
+    imax = np.argmax((cumsum_lwc_perbin > 0.5), axis=1)
+    imin = cumsum_lwc_perbin.shape[1] - np.argmax(cumsum_lwc_perbin[:, ::-1] < 0.5, axis=1) - 1
+    # The MVD formula is based on this where max is first non-zero bin cumsum > 0.5 and 
+    # min is last non-zero bin cumsum < 0.5
+    # (0.5 - cum_min) / (cum_max - cum_min) = (bx - bmin) / (bmax - bmin)
+    cum_min = cumsum_lwc_perbin[np.arange(len(cumsum_lwc_perbin)), imin]
+    cum_max = cumsum_lwc_perbin[np.arange(len(cumsum_lwc_perbin)), imax]
+    bmin = mid_bin[imin]
+    bmax = mid_bin[imax]
+    df['MVD_mcda (um)'] = bmin + (0.5 - cum_min)/(cum_max - cum_min) * (bmax - bmin)
     # Calculate ED
-    df['ED_mcda (um)'] = 2 * ((conc_perbin * mid_bin**3).sum(axis=1))/((conc_perbin * mid_bin**2).sum(axis=1))
-    
-    df.columns = ['bin' + str(x) + '_mcda (dN/dlogDp)' if re.search('^[0-9]+', str(x))
-                  else x for x in df.columns]
-    for particle_size, each_dlog_bin in zip(df.columns[1:257], dlog_bin):
-        df[particle_size] = df[particle_size] / each_dlog_bin / 10 / 46.67
-
+    top = (conc_perbin * mid_bin**3).sum(axis=1)
+    bottom = (conc_perbin * mid_bin**2).sum(axis=1)
+    df['ED_mcda (um)'] = 2 * np.divide(top, bottom, out=np.zeros_like(top), where=bottom!=0)
+    # Drop columns
     df = df.drop(['pcount_mcda', 'pm4_mcda', 'pmtot_mcda'], axis=1)
     return df
 
