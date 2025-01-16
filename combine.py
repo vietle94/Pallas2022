@@ -52,7 +52,7 @@ df = reduce(lambda left,right: pd.merge(left,right,on=['datetime'],
 df = df.fillna(-9999.9)
 
 for i, row in flight_time.iterrows():
-    df_ = df[((df['datetime'] > row['start']) & (df['datetime'] < row['end']))]
+    df_ = df[((df['datetime'] > row['start']) & (df['datetime'] < row['end']))].copy()
     df_['datetime'] = df_['datetime'].dt.tz_localize('Europe/Helsinki').dt.tz_convert('UTC')
     df_ = df_.reset_index(drop=True)
     save_time = df_.iloc[0].datetime.strftime("%Y%m%d.%H%M")
