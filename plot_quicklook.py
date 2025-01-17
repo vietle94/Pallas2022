@@ -7,11 +7,11 @@ import glob
 import string
 import pytz
 import json
-pop_binedges = '0.119552706	0.140894644	0.169068337	0.204226949	0.227523895	0.253291842	0.279285719	0.35426882	0.604151175	0.705102841	0.785877189	1.100686925	1.117622254	1.765832382	2.690129739	3.014558062 4.392791391'
-pop_binedges = np.fromstring(pop_binedges, dtype=float, sep="\t")
+
+pop_binedges = np.loadtxt('pops_binedges.txt')
 pop_midbin = (pop_binedges[1:] + pop_binedges[:-1])/2
 
-with open('mcda_midbin.txt', 'r') as file: 
+with open('mcda_midbin_all.txt', 'r') as file: 
     mcda_midbin_all = json.loads(file.read())
 
 def plot_quicklook(df):

@@ -5,6 +5,7 @@ import json
 
 with open('mcda_midbin_all.txt', 'r') as file: 
     mcda_midbin_all = json.loads(file.read())
+pop_binedges = np.loadtxt('pops_binedges.txt')
 
 def calculate_height(p0, p1, T0, T1):
     R = 287.05
@@ -127,9 +128,6 @@ def preprocess_pops(file):
     time_col = df.pop('datetime')
     df.insert(0, 'datetime', time_col)
     
-    pop_binedges = '0.119552706	0.140894644	0.169068337	0.204226949	0.227523895	0.253291842	0.279285719	0.35426882	0.604151175	0.705102841	0.785877189	1.100686925	1.117622254	1.765832382	2.690129739	3.014558062 4.392791391'
-    pop_binedges = np.fromstring(pop_binedges, dtype=float, sep="\t")
-    # pop_midbin = (pop_binedges[1:] + pop_binedges[:-1])/2
     dlog_bin = np.log10(pop_binedges[1:]) - np.log10(pop_binedges[:-1])
     pop_binlab = ['b0', 'b1', 'b2',
                   'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b9', 'b10', 'b11', 'b12', 'b13',

@@ -38,8 +38,7 @@ fig.colorbar(p, ax=ax, orientation='horizontal', label=r'dN/dlogDp ($cm^{-3}$)',
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/mcda_ts.png", dpi=600,
             bbox_inches='tight')
 # %%
-pop_binedges = '0.119552706	0.140894644	0.169068337	0.204226949	0.227523895	0.253291842	0.279285719	0.35426882	0.604151175	0.705102841	0.785877189	1.100686925	1.117622254	1.765832382	2.690129739	3.014558062 4.392791391'
-pop_binedges = np.fromstring(pop_binedges, dtype=float, sep="\t")
+pop_binedges = np.loadtxt('pops_binedges.txt')
 pop_midbin = (pop_binedges[1:] + pop_binedges[:-1])/2
 
 fig, ax = plt.subplots(2, 21, sharey='row', sharex='col', figsize=(10, 6))
