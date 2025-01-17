@@ -11,8 +11,8 @@ pop_binedges = '0.119552706	0.140894644	0.169068337	0.204226949	0.227523895	0.25
 pop_binedges = np.fromstring(pop_binedges, dtype=float, sep="\t")
 pop_midbin = (pop_binedges[1:] + pop_binedges[:-1])/2
 
-with open('mcda_sizes.txt', 'r') as file: 
-    mcda_sizes = json.loads(file.read())
+with open('mcda_midbin.txt', 'r') as file: 
+    mcda_midbin_all = json.loads(file.read())
 
 def plot_quicklook(df):
 
@@ -20,7 +20,7 @@ def plot_quicklook(df):
         size = 'water_0.15-17'
     else:
         size = 'water_0.6-40'
-    cda_midbin = np.array(mcda_sizes[size], dtype=float)
+    cda_midbin = np.array(mcda_midbin_all[size], dtype=float)
     cda_midbin = cda_midbin[81:]
     fig, ax = plt.subplot_mosaic([
         ['press', 'mcda'],

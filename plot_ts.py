@@ -6,8 +6,8 @@ from matplotlib.colors import LogNorm
 import json
 
 data_path = r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Processed_data/'
-with open('mcda_sizes.txt', 'r') as file: 
-    mcda_sizes = json.loads(file.read())
+with open('mcda_midbin_all.txt', 'r') as file: 
+    mcda_midbin_all = json.loads(file.read())
 # %%
 fig, ax = plt.subplots(1, 21, sharey=True, figsize=(10, 4))
 fig.subplots_adjust(wspace=0)
@@ -22,7 +22,7 @@ for file, (i, ax_) in zip(glob.glob(data_path + '*.csv'),
         size = 'water_0.15-17'
     else:
         size = 'water_0.6-40'
-    cda_midbin = np.array(mcda_sizes[size], dtype=float)
+    cda_midbin = np.array(mcda_midbin_all[size], dtype=float)
     cda_midbin = cda_midbin[81:]
     p = ax_.pcolormesh(grp_avg['datetime'],
                             cda_midbin,

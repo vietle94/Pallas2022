@@ -3,8 +3,8 @@ import numpy as np
 import re
 import json
 
-with open('mcda_sizes.txt', 'r') as file: 
-    mcda_sizes = json.loads(file.read())
+with open('mcda_midbin_all.txt', 'r') as file: 
+    mcda_midbin_all = json.loads(file.read())
 
 def calculate_height(p0, p1, T0, T1):
     R = 287.05
@@ -58,7 +58,7 @@ def preprocess_mcda(file, size):
     
     # calculate size dlog_bin
     print(size)
-    mid_bin = np.array(mcda_sizes[size], dtype=float)
+    mid_bin = np.array(mcda_midbin_all[size], dtype=float)
     mid_bin = mid_bin[81:]
     binedges = np.append(np.append(
         mid_bin[0] - (- mid_bin[0] + mid_bin[1])/2,
