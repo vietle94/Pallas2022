@@ -31,19 +31,19 @@ def plot_quicklook(df):
     figsize=(9, 6), sharex=True, constrained_layout=True)
 
     ax['press'].plot(df['datetime'], df['press_bme (hPa)'], '.')
-    ax['press'].set_ylabel('press_bme (hPa)')
+    ax['press'].set_ylabel(r'$P$ $(hPa)$')
     ax['press'].grid()
 
     ax['temp'].plot(df['datetime'], df['temp_bme (C)'], '.')
-    ax['temp'].set_ylabel(r'temp_bme (C)')
+    ax['temp'].set_ylabel(r'$T$ $(\degree C)$')
     ax['temp'].grid()
 
     ax['RH'].plot(df['datetime'], df['rh_bme (%)'], '.')
-    ax['RH'].set_ylabel(r'rh_bme (%)')
+    ax['RH'].set_ylabel(r'$RH$ $(\%)$')
     ax['RH'].grid()
 
     ax['cpc'].plot(df['datetime'], df['N_conc_cpc(1/ccm)'], '.')
-    ax['cpc'].set_ylabel(r'N_conc_cpc(1/ccm)')
+    ax['cpc'].set_ylabel(r'$N$ ($cm^{-3}$)')
     ax['cpc'].grid()
     ax['cpc'].set_yscale('log')
 
@@ -56,7 +56,7 @@ def plot_quicklook(df):
     ax['mcda'].set_yscale('log')
     ax['mcda'].set_ylabel(r'Size ($\mu m$)')
     cbar = fig.colorbar(p, ax=ax['mcda'])
-    cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$) miniCDA', rotation=90)
+    cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$)', rotation=90)
 
     p = ax['pop'].pcolormesh(grp_avg['datetime'],
                              pop_midbin,
@@ -67,13 +67,15 @@ def plot_quicklook(df):
     ax['pop'].set_xlim(ax['mcda'].get_xlim())
     ax['pop'].set_ylabel(r'Size ($\mu m$)')
     cbar = fig.colorbar(p, ax=ax['pop'])
-    cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$) POP', rotation=90)
+    cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$)', rotation=90)
 
-    ax['cpc'].set_xlabel('Time (UTC)')
-    ax['pop'].set_xlabel('Time (UTC)')
+    ax['cpc'].set_xlabel('Time (Hour, UTC)')
+    ax['pop'].set_xlabel('Time (Hour, UTC)')
 
     for n, (_, ax_) in enumerate(ax.items()):
-        ax_.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M', tz=pytz.timezone('UTC')))
+        ax_.xaxis.set_major_formatter(mdates.DateFormatter('%H', tz=pytz.timezone('UTC')))
+        ax_.xaxis.set_major_locator(mdates.HourLocator(interval=1))
+        ax_.xaxis.set_major_locator
         ax_.xaxis.set_tick_params(labelbottom=True)
         ax_.text(-0.0, 1.05, '(' + string.ascii_lowercase[n] + ')',
             transform=ax_.transAxes, size=12)
