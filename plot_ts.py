@@ -5,9 +5,7 @@ import numpy as np
 from matplotlib.colors import LogNorm
 import json
 import preprocess
-import matplotlib.dates as mdates
 import string
-import pytz
 
 data_path = r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Processed_data/'
 with open('mcda_midbin_all.txt', 'r') as file: 
@@ -185,4 +183,3 @@ ax[3, 0].set_ylabel(r'Size ($\mu m$)')
 
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/cloud_properties_ts.png", dpi=600,
             bbox_inches='tight')
-# %%
