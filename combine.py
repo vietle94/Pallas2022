@@ -54,7 +54,9 @@ df = df.fillna(-9999.9)
 
 for i, row in flight_time.iterrows():
     df_ = df[((df['datetime'] > row['start']) & (df['datetime'] < row['end']))].copy()
-    df_['datetime'] = df_['datetime'].dt.tz_localize('Europe/Helsinki').dt.tz_convert('UTC')
+    # df_['datetime'] = df_['datetime'].dt.tz_localize('Europe/Helsinki').dt.tz_convert('UTC')
+    df_['datetime'] = df_['datetime'] - pd.Timedelta(hours=2) # we used winter time even though it was summer
+    df_['datetime'] = df_['datetime'].dt.tz_localize('UTC')
     df_ = df_.reset_index(drop=True)
     cloud = preprocess.cloudmask(df_)
     df_.loc[~cloud, ['Nd_mcda (1/ccm)', 'LWC_mcda (g/m3)', 'MVD_mcda (um)', 'ED_mcda (um)']] = np.nan
