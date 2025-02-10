@@ -89,7 +89,7 @@ fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/
             bbox_inches='tight')
 
 # %%
-fig, ax = plt.subplots(3, 21, sharey='row', sharex='col', figsize=(10, 6.5))
+fig, ax = plt.subplots(3, 21, sharey='row', sharex='col', figsize=(10, 6))
 fig.subplots_adjust(wspace=0, hspace=0.1)
 
 for file, ax0, ax1, ax2  in zip(glob.glob(data_path + '*.csv'),
@@ -116,9 +116,9 @@ for file, ax0, ax1, ax2  in zip(glob.glob(data_path + '*.csv'),
     ax2.set_xticks([])
     ax2.set_xlabel(df.iloc[0].datetime.strftime('%d/%m\n %H:%M'), size=7)
 
-ax[0, 0].set_ylabel('press_bme (hPa)')
-ax[1, 0].set_ylabel('temp_bme (C)')
-ax[2, 0].set_ylabel('rh_bme (%)')
+ax[0, 0].set_ylabel(r'$P$ $(hPa)$')
+ax[1, 0].set_ylabel(r'$T$ $(\degree C)$')
+ax[2, 0].set_ylabel(r'$RH$ $(\%)$')
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/meteorology_ts.png", dpi=600,
             bbox_inches='tight')
 
