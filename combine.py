@@ -59,7 +59,7 @@ for i, row in flight_time.iterrows():
     df_['datetime'] = df_['datetime'].dt.tz_localize('UTC')
     df_ = df_.reset_index(drop=True)
     cloud = preprocess.cloudmask(df_)
-    df_.loc[~cloud, ['Nd_mcda (1/ccm)', 'LWC_mcda (g/m3)', 'MVD_mcda (um)', 'ED_mcda (um)']] = np.nan
+    df_.loc[~cloud, ['Nd_mcda (1/ccm)', 'LWC_mcda (g/m3)', 'MVD_mcda (um)', 'ED_mcda (um)']] = -9999.9
     save_time = df_.iloc[0].datetime.strftime("%Y%m%d.%H%M")
     df_.to_csv(
             save_path + 'FMI.TBS.a1.' + save_time + '.csv', index=False)
