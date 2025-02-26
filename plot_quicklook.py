@@ -5,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import glob
 import string
-import pytz
 import json
 
 pops_binedges = np.loadtxt('pops_binedges.txt')
@@ -16,7 +15,7 @@ with open('mcda_midbin_all.txt', 'r') as file:
 
 def plot_quicklook(df):
 
-    if df['datetime (utc)'][0] < pd.Timestamp('20221003', tz='UTC'):
+    if df['datetime (utc)'][0] < pd.Timestamp('20221003'):
         size = 'water_0.15-17'
     else:
         size = 'water_0.6-40'
@@ -73,7 +72,7 @@ def plot_quicklook(df):
     ax['pops'].set_xlabel('Time (Hour, UTC)')
 
     for n, (_, ax_) in enumerate(ax.items()):
-        ax_.xaxis.set_major_formatter(mdates.DateFormatter('%H', tz=pytz.timezone('UTC')))
+        ax_.xaxis.set_major_formatter(mdates.DateFormatter('%H'))
         ax_.xaxis.set_major_locator(mdates.HourLocator(interval=1))
         ax_.xaxis.set_major_locator
         ax_.xaxis.set_tick_params(labelbottom=True)
@@ -89,7 +88,7 @@ for file in file_list:
     df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
     df = df.replace(-9999.9, np.nan)
     fig = plot_quicklook(df)
-    save_time = df.datetime[0].strftime("%Y%m%d_%H%M")
+    save_time = df['datetime (utc)'][0].strftime("%Y%m%d_%H%M")
     fig.savefig(file_path + 'quicklook' + save_time + '.png', dpi=500)
     plt.close()
     print(f'Plot {save_time} saved')

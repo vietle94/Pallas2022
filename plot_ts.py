@@ -75,7 +75,7 @@ for file, ax_cpc, ax_pops, ax_mcda  in zip(glob.glob(data_path + '*.csv'),
                  markeredgecolor='none', markersize=2.0)
     ax_mcda.grid()
     ax_mcda.set_xticks([])
-    ax_mcda.set_xlabel(df.iloc[0].datetime.strftime('%d/%m\n %H:%M'), size=7)
+    ax_mcda.set_xlabel(df['datetime (utc)'][0].strftime('%d/%m\n %H:%M'), size=7)
     ax_mcda.set_yscale('log')
 
 for n, ax_ in enumerate(ax[:, 0].flatten()):
@@ -114,7 +114,7 @@ for file, ax0, ax1, ax2  in zip(glob.glob(data_path + '*.csv'),
                  markeredgecolor='none', markersize=2.0)
     ax2.grid()
     ax2.set_xticks([])
-    ax2.set_xlabel(df.iloc[0].datetime.strftime('%d/%m\n %H:%M'), size=7)
+    ax2.set_xlabel(df['datetime (utc)'][0].strftime('%d/%m\n %H:%M'), size=7)
 
 for n, ax_ in enumerate(ax[:, 0].flatten()):
     ax_.text(-0.0, 1.05, '(' + string.ascii_lowercase[n] + ')',
@@ -158,7 +158,7 @@ for file, ax0, ax1, ax2, ax3  in zip(glob.glob(data_path + '*.csv'),
                          norm=LogNorm(vmax=10, vmin=0.01), cmap='jet')
     ax3.set_yscale('log')
     ax3.grid()
-    ax3.set_xlabel(df.iloc[0].datetime.strftime('%d/%m\n %H:%M'), size=7)
+    ax3.set_xlabel(df['datetime (utc)'][0].strftime('%d/%m\n %H:%M'), size=7)
     ax3.set_xticks([])
     
     ax1.plot(df['datetime (utc)'], df['MVD_mcda (um)'], '.',

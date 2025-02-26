@@ -16,7 +16,7 @@ df.replace(-9999.9, np.nan, inplace=True)
 
 df[[x for x in df.columns if "_mcda" in x]] = df[[x for x in df.columns if "_mcda" in x]].ffill(limit_area='inside')
 
-x_tick_label = df.groupby('flight_id').first().datetime.dt.strftime('%d/%m\n %H:%M')
+x_tick_label = df.groupby('flight_id').first()['datetime (utc)'].dt.strftime('%d/%m\n %H:%M')
 df_count = df[["temp_bme (C)", "N_conc_cpc(cm-3)", "N_conc_pops (cm-3)", "pm10_mcda", 'flight_id']]
 df_count = df_count.groupby("flight_id").count()
 
