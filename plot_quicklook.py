@@ -16,7 +16,7 @@ with open('mcda_midbin_all.txt', 'r') as file:
 
 def plot_quicklook(df):
 
-    if df['datetime'][0] < pd.Timestamp('20221003', tz='UTC'):
+    if df['datetime (utc)'][0] < pd.Timestamp('20221003', tz='UTC'):
         size = 'water_0.15-17'
     else:
         size = 'water_0.6-40'
@@ -30,25 +30,25 @@ def plot_quicklook(df):
     ],
     figsize=(9, 6), sharex=True, constrained_layout=True)
 
-    ax['press'].plot(df['datetime'], df['press_bme (hPa)'], '.')
+    ax['press'].plot(df['datetime (utc)'], df['press_bme (hPa)'], '.')
     ax['press'].set_ylabel(r'$P$ $(hPa)$')
     ax['press'].grid()
 
-    ax['temp'].plot(df['datetime'], df['temp_bme (C)'], '.')
+    ax['temp'].plot(df['datetime (utc)'], df['temp_bme (C)'], '.')
     ax['temp'].set_ylabel(r'$T$ $(\degree C)$')
     ax['temp'].grid()
 
-    ax['RH'].plot(df['datetime'], df['rh_bme (%)'], '.')
+    ax['RH'].plot(df['datetime (utc)'], df['rh_bme (%)'], '.')
     ax['RH'].set_ylabel(r'$RH$ $(\%)$')
     ax['RH'].grid()
 
-    ax['cpc'].plot(df['datetime'], df['N_conc_cpc(1/ccm)'], '.')
+    ax['cpc'].plot(df['datetime (utc)'], df['N_conc_cpc (cm-3)'], '.')
     ax['cpc'].set_ylabel(r'$N$ ($cm^{-3}$)')
     ax['cpc'].grid()
     ax['cpc'].set_yscale('log')
 
-    grp_avg = df.set_index('datetime').resample('5min').mean().reset_index()
-    p = ax['mcda'].pcolormesh(grp_avg['datetime'],
+    grp_avg = df.set_index('datetime (utc)').resample('5min').mean().reset_index()
+    p = ax['mcda'].pcolormesh(grp_avg['datetime (utc)'],
                               cda_midbin,
                               grp_avg[[x for x in df.columns if '_mcda (dN/dlogDp)' in x]].T,
                               norm=LogNorm(vmax=10, vmin=0.01),
@@ -58,7 +58,7 @@ def plot_quicklook(df):
     cbar = fig.colorbar(p, ax=ax['mcda'])
     cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$)', rotation=90)
 
-    p = ax['pop'].pcolormesh(grp_avg['datetime'],
+    p = ax['pop'].pcolormesh(grp_avg['datetime (utc)'],
                              pop_midbin,
                              grp_avg[[x for x in df.columns if '_pops (dN/dlogDp)' in x]].T,
                              norm=LogNorm(vmax=10, vmin=0.01),
@@ -86,7 +86,7 @@ file_path = r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI b
 file_list = glob.glob(file_path + '*.csv')
 for file in file_list:
     df = pd.read_csv(file)
-    df['datetime'] = pd.to_datetime(df['datetime'])
+    df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
     df = df.replace(-9999.9, np.nan)
     fig = plot_quicklook(df)
     save_time = df.datetime[0].strftime("%Y%m%d_%H%M")

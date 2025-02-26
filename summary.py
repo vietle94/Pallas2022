@@ -15,7 +15,7 @@ for var in variable:
     print(f"{var}: {df[var].mean():.5f} +- {df[var].std():.5f}")
 
 # %%
-variable = ["N_conc_cpc(1/ccm)", "N_conc_pops (1/ccm)", 'Nd_mcda (1/ccm)']
+variable = ["N_conc_cpc(cm-3)", "N_conc_pops (cm-3)", 'Nd_mcda (cm-3)']
 
 for var in variable:
     print(f"{var}: {df[var].mean():.5f} +- {df[var].std():.5f}")

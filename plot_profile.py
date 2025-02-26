@@ -14,18 +14,18 @@ cda_midbin = np.fromstring(cda_midbin, dtype=float, sep="\t")
 
 data_path = r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Processed_data/'
 df = pd.read_csv(data_path + 'FMI.TBS.a1.20220918.0620.csv')
-df['datetime'] = pd.to_datetime(df['datetime'])
-df = df.loc[df['datetime'] < pd.Timestamp('20220918 0800+0000')]
+df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
+df = df.loc[df['datetime (utc)'] < pd.Timestamp('20220918 0800+0000')]
 df.replace(-9999.9, np.nan, inplace=True)
 df.dropna(subset=['press_bme (hPa)'], inplace=True)
-df = df.set_index('datetime').resample('1min').mean().reset_index()
+df = df.set_index('datetime (utc)').resample('1min').mean().reset_index()
 df.sort_values('press_bme (hPa)', inplace=True)
 df.reset_index(drop=True, inplace=True)
 # %%
 fig, ax = plt.subplots(1, 5, figsize=(10, 4), sharey=True, constrained_layout=True)
 ax[0].plot(df['temp_bme (C)'], df['press_bme (hPa)'], '.')
 ax[1].plot(df['rh_bme (%)'], df['press_bme (hPa)'], '.')
-ax[2].plot(df['N_conc_cpc(1/ccm)'], df['press_bme (hPa)'], '.')
+ax[2].plot(df['N_conc_cpc(cm-3)'], df['press_bme (hPa)'], '.')
 ax[3].pcolormesh(pop_midbin, df['press_bme (hPa)'],
                  df[[x for x in df.columns if '_pops (dN/dlogDp)' in x]],
                  norm=LogNorm(vmax=10, vmin=0.01), 

@@ -2,7 +2,6 @@ import pandas as pd
 import glob
 from UAVision import preprocess
 from functools import reduce
-import numpy as np
 
 bme_path = glob.glob(
     r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Raw_data/**/bme*', recursive=True)
@@ -59,8 +58,9 @@ for i, row in flight_time.iterrows():
     df_['datetime'] = df_['datetime'].dt.tz_localize('UTC')
     df_ = df_.reset_index(drop=True)
     cloud = preprocess.cloudmask(df_)
-    df_.loc[~cloud, ['Nd_mcda (1/ccm)', 'LWC_mcda (g/m3)', 'MVD_mcda (um)', 'ED_mcda (um)']] = -9999.9
+    df_.loc[~cloud, ['Nd_mcda (cm-3)', 'LWC_mcda (g/m3)', 'MVD_mcda (um)', 'ED_mcda (um)']] = -9999.9
     save_time = df_.iloc[0].datetime.strftime("%Y%m%d.%H%M")
+    df_ = df_.rename(columns={'datetime': 'datetime (utc)'})
     df_.to_csv(
             save_path + 'FMI.TBS.a1.' + save_time + '.csv', index=False)
     print(f'File {save_time} saved')
