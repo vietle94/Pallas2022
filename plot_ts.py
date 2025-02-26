@@ -12,8 +12,8 @@ with open('mcda_midbin_all.txt', 'r') as file:
     mcda_midbin_all = json.loads(file.read())
 
 # %%
-pop_binedges = np.loadtxt('pops_binedges.txt')
-pop_midbin = (pop_binedges[1:] + pop_binedges[:-1])/2
+pops_binedges = np.loadtxt('pops_binedges.txt')
+pops_midbin = (pops_binedges[1:] + pops_binedges[:-1])/2
 
 fig, ax = plt.subplots(2, 21, sharey='row', sharex='col', figsize=(10, 6))
 fig.subplots_adjust(wspace=0, hspace=0)
@@ -30,7 +30,7 @@ for file, ax0_, (i, ax_) in zip(glob.glob(data_path + '*.csv'),
     ax0_.set_yscale('log')
 
     p = ax_.pcolormesh(df['datetime (utc)'],
-                            pop_midbin,
+                            pops_midbin,
                             df[[x for x in df.columns if '_pops (dN/dlogDp)' in x]].T,
                             norm=LogNorm(vmax=10, vmin=0.01),
                             cmap='jet')

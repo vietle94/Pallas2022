@@ -8,8 +8,8 @@ import string
 import pytz
 import json
 
-pop_binedges = np.loadtxt('pops_binedges.txt')
-pop_midbin = (pop_binedges[1:] + pop_binedges[:-1])/2
+pops_binedges = np.loadtxt('pops_binedges.txt')
+pops_midbin = (pops_binedges[1:] + pops_binedges[:-1])/2
 
 with open('mcda_midbin_all.txt', 'r') as file: 
     mcda_midbin_all = json.loads(file.read())
@@ -25,8 +25,8 @@ def plot_quicklook(df):
     fig, ax = plt.subplot_mosaic([
         ['press', 'mcda'],
         ['temp', 'mcda'],
-        ['RH', 'pop'],
-        ['cpc', 'pop']
+        ['RH', 'pops'],
+        ['cpc', 'pops']
     ],
     figsize=(9, 6), sharex=True, constrained_layout=True)
 
@@ -58,19 +58,19 @@ def plot_quicklook(df):
     cbar = fig.colorbar(p, ax=ax['mcda'])
     cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$)', rotation=90)
 
-    p = ax['pop'].pcolormesh(grp_avg['datetime (utc)'],
-                             pop_midbin,
+    p = ax['pops'].pcolormesh(grp_avg['datetime (utc)'],
+                             pops_midbin,
                              grp_avg[[x for x in df.columns if '_pops (dN/dlogDp)' in x]].T,
                              norm=LogNorm(vmax=10, vmin=0.01),
                              cmap='jet')
-    ax['pop'].set_yscale('log')
-    ax['pop'].set_xlim(ax['mcda'].get_xlim())
-    ax['pop'].set_ylabel(r'Size ($\mu m$)')
-    cbar = fig.colorbar(p, ax=ax['pop'])
+    ax['pops'].set_yscale('log')
+    ax['pops'].set_xlim(ax['mcda'].get_xlim())
+    ax['pops'].set_ylabel(r'Size ($\mu m$)')
+    cbar = fig.colorbar(p, ax=ax['pops'])
     cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$)', rotation=90)
 
     ax['cpc'].set_xlabel('Time (Hour, UTC)')
-    ax['pop'].set_xlabel('Time (Hour, UTC)')
+    ax['pops'].set_xlabel('Time (Hour, UTC)')
 
     for n, (_, ax_) in enumerate(ax.items()):
         ax_.xaxis.set_major_formatter(mdates.DateFormatter('%H', tz=pytz.timezone('UTC')))

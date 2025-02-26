@@ -1,43 +1,45 @@
 import xarray as xr
 import glob
 import pandas as pd
-from UAVision.preprocess import pop_binedges, calculate_midbin, mcda_midbin_all
+from UAVision.preprocess import pops_binedges, calculate_midbin, mcda_midbin_all
 import re
 
 csv_dir = r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Processed_data/'
 csv_files = glob.glob(csv_dir + '*.csv')
-pop_midbin = calculate_midbin(pop_binedges)
+pops_midbin = calculate_midbin(pops_binedges)
 for file in csv_files:
     df = pd.read_csv(file)
     df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
     df = df.rename(columns={'datetime (utc)': 'datetime'})
     save_time = df.iloc[0]["datetime"].strftime("%Y%m%d.%H%M")
-    if df['datetime'][0] < pd.Timestamp('20221003', tz='UTC'):
+    if df['datetime'][0] < pd.Timestamp('20221003'):
         size = 'water_0.15-17'
         mcda_midbin = mcda_midbin_all[size]
+        mcda_midbin = mcda_midbin[81:]
     else:
         size = 'water_0.6-40'
         mcda_midbin = mcda_midbin_all[size]
+        mcda_midbin = mcda_midbin[81:]
 
-    if df['datetime'][0] < pd.Timestamp('20220924', tz='UTC'):
+    if df['datetime'][0] < pd.Timestamp('20220924'):
         platform = "Helikites"
     else:
         platform = "Aerostat"
 
     df_xr = xr.Dataset.from_dataframe(df.set_index('datetime'))
     df_xr["conc_pops (cm-3)"] = xr.concat(
-            [df_xr[f"bin{x}_pops (cm-3)"] for x in range(1, 17)], pop_midbin
+            [df_xr[f"bin{x}_pops (cm-3)"] for x in range(1, 17)], pops_midbin
         ).T
     df_xr["conc_pops_dNdlogDp"] = xr.concat(
-            [df_xr[f"bin{x}_pops (dN/dlogDp)"] for x in range(1, 17)], pop_midbin
+            [df_xr[f"bin{x}_pops (dN/dlogDp)"] for x in range(1, 17)], pops_midbin
         ).T
-    df_xr = df_xr.rename({"concat_dim": "pop_midbin"})
+    df_xr = df_xr.rename({"concat_dim": "pops_midbin"})
 
     df_xr["conc_mcda (cm-3)"] = xr.concat(
-            [df_xr[f"bin{x}_mcda (cm-3)"] for x in range(1, 17)], pop_midbin
+            [df_xr[f"bin{x}_mcda (cm-3)"] for x in range(1, 176)], mcda_midbin
         ).T
     df_xr["conc_mcda_dNdlogDp"] = xr.concat(
-            [df_xr[f"bin{x}_mcda (dN/dlogDp)"] for x in range(1, 17)], pop_midbin
+            [df_xr[f"bin{x}_mcda (dN/dlogDp)"] for x in range(1, 176)], mcda_midbin
         ).T
     df_xr = df_xr.rename({"concat_dim": "mcda_midbin"})
     df_xr = df_xr[['temp_bme (C)',
@@ -62,7 +64,7 @@ for file in csv_files:
     df_xr = df_xr.rename({x:re.sub(r" \(.*\)", "", x) for x in list(df_xr.data_vars)})
 
     df_xr['datetime'].attrs = {'long_name': 'datetime in UTC', '_FillValue': -9999.9, 'processing_level': 'b1'}
-    df_xr['pop_midbin'].attrs = {'units': 'µm', 'long_name': 'centers of the size bins from POP', '_FillValue': -9999.9, 'processing_level': 'b1'}
+    df_xr['pops_midbin'].attrs = {'units': 'µm', 'long_name': 'centers of the size bins from POPS', '_FillValue': -9999.9, 'processing_level': 'b1'}
     df_xr['mcda_midbin'].attrs = {'units': 'µm', 'long_name': 'centers of the size bins from mCDA', '_FillValue': -9999.9, 'processing_level': 'b1'}
     df_xr['temp_bme'].attrs = {'units': 'degree Celsius', 'long_name': 'Temperature measured by BME280', '_FillValue': -9999.9, 'processing_level': 'b1'}
     df_xr['press_bme'].attrs = {'units': 'hPa', 'long_name': 'Pressure measured by BME280', '_FillValue': -9999.9, 'processing_level': 'b1'}
