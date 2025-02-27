@@ -92,5 +92,5 @@ for file in csv_files:
     df_xr.attrs['processing_level'] = "b1"
     df_xr.attrs['created by'] = "Viet Le"
 
-    df_xr.to_netcdf(csv_dir + "FMI.DBP.b1." + save_time + ".nc")
+    df_xr.to_netcdf(csv_dir + "FMI.TBS.b1." + save_time + ".nc")
     print(f"Saved {save_time}.nc")
