@@ -15,7 +15,27 @@ for var in variable:
     print(f"{var}: {df[var].mean():.5f} +- {df[var].std():.5f}")
 
 # %%
-variable = ["N_conc_cpc(cm-3)", "N_conc_pops (cm-3)", 'Nd_mcda (cm-3)']
+cloud = ~np.isnan(df["LWC_mcda (g/m3)"])
+variable = ["N_conc_cpc (cm-3)", "N_conc_pops (cm-3)", 'Nd_mcda (cm-3)']
 
 for var in variable:
-    print(f"{var}: {df[var].mean():.5f} +- {df[var].std():.5f}")
+    print(f"{var}: {df.loc[~cloud, var].mean():.5f} +- {df.loc[~cloud, var].std():.5f}")
+    
+for var in variable:
+    print(f"{var}: {df.loc[cloud, var].mean():.5f} +- {df.loc[cloud, var].std():.5f}")
+
+# %%
+variable = ['LWC_mcda (g/m3)', 'MVD_mcda (um)', 'ED_mcda (um)']
+
+for var in variable:
+    print(f"{var}: {df[var].median():.5f}")
+# %%
+cloud = ~np.isnan(df["LWC_mcda (g/m3)"])
+variable = ["N_conc_cpc (cm-3)", "N_conc_pops (cm-3)", 'Nd_mcda (cm-3)']
+
+for var in variable:
+    print(f"{var}: {df.loc[~cloud, var].median():.5f}")
+    
+for var in variable:
+    print(f"{var}: {df.loc[cloud, var].median():.5f}")
+
