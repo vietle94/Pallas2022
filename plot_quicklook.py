@@ -29,8 +29,8 @@ def plot_quicklook(df):
     ],
     figsize=(9, 6), sharex=True, constrained_layout=True)
 
-    ax['press'].plot(df['datetime (utc)'], df['press_bme (hPa)'], '.')
-    ax['press'].set_ylabel(r'$P$ $(hPa)$')
+    ax['press'].plot(df['datetime (utc)'], df['height_bme (m)'], '.')
+    ax['press'].set_ylabel(r'Height a.g.l $(m)$')
     ax['press'].grid()
 
     ax['temp'].plot(df['datetime (utc)'], df['temp_bme (C)'], '.')
