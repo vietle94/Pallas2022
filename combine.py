@@ -193,6 +193,7 @@ df = reduce(lambda left,right: pd.merge(left,right,on=['datetime'],
 df = df.fillna(-9999.9)
 
 for i, row in flight_time.iterrows():
+    df.loc[df['height_bme (m)'] < 0, 'height_bme (m)'] = 0
     df_ = df[((df['datetime'] > row['start']) & (df['datetime'] < row['end']))].copy()
     df_['datetime'] = df_['datetime'] - pd.Timedelta(hours=2) # we used winter time even though it was summer
     rh_pops = calc_rh(df_['temp_pops (C)'].to_numpy(), calc_dewpoint(df_['temp_bme (C)'].to_numpy(), 
