@@ -166,10 +166,10 @@ bme = pd.DataFrame({})
 for file in bme_path:
     df = bme_preprocess.preprocess_bme(file)
     df = df.set_index('datetime').resample('s').interpolate('linear').reset_index() # bme missing data once a while
-    df['winch_contamination'] = False
+    df['winch_contamination'] = 0
     bme_time = pd.to_datetime(file[-18:-10])
     if bme_time < pd.Timestamp('20221003'):
-        df.loc[df['height_bme (m)'] < 200, 'winch_contamination'] = True
+        df.loc[df['height_bme (m)'] < 200, 'winch_contamination'] = 1
     bme = pd.concat([bme, df], ignore_index=True)
 
 cpc = pd.concat([cpc_preprocess.preprocess_cpc(x) for x in cpc_path])

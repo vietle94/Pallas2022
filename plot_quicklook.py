@@ -37,9 +37,11 @@ def plot_quicklook(df):
     ax['temp'].set_ylabel(r'$T$ $(\degree C)$')
     ax['temp'].grid()
 
-    ax['RH'].plot(df['datetime (utc)'], df['rh_bme (%)'], '.')
+    ax['RH'].plot(df['datetime (utc)'], df['rh_bme (%)'], '.', label="Ambient")
+    ax['RH'].plot(df['datetime (utc)'], df['rh_pops (%)'], '.', label="Internal_POPS")
     ax['RH'].set_ylabel(r'$RH$ $(\%)$')
     ax['RH'].grid()
+    ax['RH'].legend()
 
     ax['cpc'].plot(df['datetime (utc)'], df['N_conc_cpc (cm-3)'], '.')
     ax['cpc'].set_ylabel(r'$N$ ($cm^{-3}$)')
@@ -78,7 +80,7 @@ def plot_quicklook(df):
         ax_.xaxis.set_tick_params(labelbottom=True)
         ax_.text(-0.0, 1.05, '(' + string.ascii_lowercase[n] + ')',
             transform=ax_.transAxes, size=12)
-    return fig
+    return fig, ax
 
 file_path = r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Processed_data/'
 
@@ -86,8 +88,10 @@ file_list = glob.glob(file_path + '*.csv')
 for file in file_list:
     df = pd.read_csv(file)
     df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
+    df = df[df['winch_contamination'] < 1]
+    df = df.reset_index(drop=True)
     df = df.replace(-9999.9, np.nan)
-    fig = plot_quicklook(df)
+    fig, _ = plot_quicklook(df)
     save_time = df['datetime (utc)'][0].strftime("%Y%m%d_%H%M")
     fig.savefig(file_path + 'quicklook' + save_time + '.png', dpi=500)
     plt.close()
