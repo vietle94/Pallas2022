@@ -161,7 +161,16 @@ pops_path = [x for x in pops_path if 'first_flight' not in x]
 
 save_path = r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Processed_data/'
 
-bme = pd.concat([bme_preprocess.preprocess_bme(x) for x in bme_path])
+bme = pd.DataFrame({})
+for file in bme_path:
+    df = bme_preprocess.preprocess_bme(file)
+    df = df.set_index('datetime').resample('s').interpolate('linear').reset_index() # bme missing data once a while
+    df['winch_contamination'] = False
+    bme_time = pd.to_datetime(file[-18:-10])
+    if bme_time < pd.Timestamp('20221003'):
+        df.loc[df['height_bme (m)'] < 200, 'winch_contamination'] = True
+    bme = pd.concat([bme, df], ignore_index=True)
+
 cpc = pd.concat([cpc_preprocess.preprocess_cpc(x) for x in cpc_path])
 pops = pd.concat([pops_preprocess.preprocess_pops(x) for x in pops_path])
 
@@ -189,7 +198,7 @@ pops.reset_index(inplace=True)
 # merge all dataframes
 df = reduce(lambda left,right: pd.merge(left,right,on=['datetime'],
         how='outer', sort=True),
-            [bme, cpc, pops, mcda]) 
+            [bme, cpc, pops, mcda])
 df = df.fillna(-9999.9)
 
 for i, row in flight_time.iterrows():
