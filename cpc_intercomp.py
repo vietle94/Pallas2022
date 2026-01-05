@@ -35,7 +35,7 @@ station_dmps.dropna(inplace=True)
 
 # %%
 balloon = pd.concat([pd.read_csv(file) for file in
-                           glob.glob(r"C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Processed_data\Ready/*.csv")],
+                           glob.glob(r"C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Processed_data/*.csv")],
                            ignore_index=True)
 balloon["datetime (utc)"] = pd.to_datetime(balloon["datetime (utc)"])
 balloon.rename(columns={"datetime (utc)": "datetime"}, inplace=True)
@@ -48,12 +48,11 @@ df_inter = df[np.abs(df['press_bme (hPa)'] - df['P']) < 5]
 
 # %%
 fig, ax = plt.subplots(figsize=(4.5, 4), constrained_layout=True)
+ax.plot([0, 2500], [0, 2500], '--', color='gray')
 ax.plot(df_inter['total'], df_inter['N_conc_cpc (cm-3)'], '.')
-ax.plot([0, 2000], [0, 2000])
-ax.set_ylabel('Balloon CPC concentration (cm-3)')
+ax.set_ylabel(r"Payload CPC concentration $(cm^{-3})$")
 ax.grid()
 ax.set_aspect('equal', 'box')
-ax.set_xlabel('Station DMPS concentration (cm-3)')
-fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\PaCE_2022\ESSD special issue\Viet_et_al_2025\Review_answer/cpc_intercomp.png",
+ax.set_xlabel(r"Station DMPS concentration $(cm^{-3})$")
+fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\PaCE_2022\ESSD special issue\Viet_et_al_2025\Review_answer/Review_resources/cpc_intercomp.png",
             dpi=600, bbox_inches='tight')
-
