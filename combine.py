@@ -1,3 +1,4 @@
+from fontTools.subset import subset
 import pandas as pd
 import glob
 import UAVision.bme.preprocess as bme_preprocess
@@ -199,6 +200,7 @@ pops.reset_index(inplace=True)
 df = reduce(lambda left,right: pd.merge(left,right,on=['datetime'],
         how='outer', sort=True),
             [bme, cpc, pops, mcda])
+df = df.dropna(subset=["press_bme (hPa)"])
 df = df.fillna(-9999.9)
 
 for i, row in flight_time.iterrows():
