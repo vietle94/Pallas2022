@@ -38,7 +38,7 @@ def plot_quicklook(df):
     ax['temp'].grid()
 
     ax['RH'].plot(df['datetime (utc)'], df['rh_bme (%)'], '.', label="Ambient")
-    ax['RH'].plot(df['datetime (utc)'], df['rh_pops (%)'], '.', label="Internal_POPS")
+    ax['RH'].plot(df['datetime (utc)'], df['rh_pops (%)'], '.', label="Internal")
     ax['RH'].set_ylabel(r'$RH$ $(\%)$')
     ax['RH'].grid()
     ax['RH'].legend()
