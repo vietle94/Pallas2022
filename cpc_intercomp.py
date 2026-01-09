@@ -42,10 +42,13 @@ balloon["datetime (utc)"] = pd.to_datetime(balloon["datetime (utc)"])
 balloon.rename(columns={"datetime (utc)": "datetime"}, inplace=True)
 balloon.replace(-9999.9, np.nan, inplace=True)
 balloon = balloon.set_index('datetime').resample('1min').mean().reset_index()
+balloon = balloon[np.abs(balloon['height_bme (m)']-290) < 50]
 
 # %%
-df = station.merge(balloon, on='datetime', how='inner').merge(station_dmps, on='datetime', how='inner')
-df_inter = df[np.abs(df['press_bme (hPa)'] - df['P']) < 5]
+# df = station.merge(balloon, on='datetime', how='inner').merge(station_dmps, on='datetime', how='inner')
+df = balloon.merge(station_dmps, on='datetime', how='inner')
+# df_inter = df[np.abs(df['press_bme (hPa)'] - df['P']) < 5]
+df_inter = df.copy()
 
 # %%
 fig, ax = plt.subplots(figsize=(4.5, 4), constrained_layout=True)
@@ -81,3 +84,5 @@ if mask.any():
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\PaCE_2022\ESSD special issue\Viet_et_al_2025\Review_answer/Review_resources/cpc_intercomp.png",
             dpi=600, bbox_inches='tight')
 
+
+# %%
