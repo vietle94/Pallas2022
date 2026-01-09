@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import glob
 import matplotlib.pyplot as plt
+from scipy import stats
 
 # %%
 station = pd.concat([pd.read_csv(file) for file in
@@ -48,11 +49,35 @@ df_inter = df[np.abs(df['press_bme (hPa)'] - df['P']) < 5]
 
 # %%
 fig, ax = plt.subplots(figsize=(4.5, 4), constrained_layout=True)
-ax.plot([0, 2500], [0, 2500], '--', color='gray')
 ax.plot(df_inter['total'], df_inter['N_conc_cpc (cm-3)'], '.')
 ax.set_ylabel(r"Payload CPC concentration $(cm^{-3})$")
 ax.grid()
 ax.set_aspect('equal', 'box')
 ax.set_xlabel(r"Station DMPS concentration $(cm^{-3})$")
+
+# Compute and display fit, R², and p-value
+_x = df_inter['total'].to_numpy()
+_y = df_inter['N_conc_cpc (cm-3)'].to_numpy()
+mask = np.isfinite(_x) & np.isfinite(_y)
+if mask.any():
+    x = _x[mask]
+    y = _y[mask]
+
+    # Linear regression (Pearson): slope, intercept, r, p
+    res = stats.linregress(x, y)
+    m = res.slope
+    b = res.intercept
+    r2 = res.rvalue * res.rvalue
+    pval = res.pvalue
+
+    # Plot best-fit line across the same span as 1:1
+    x_fit = np.array([0, 2500])
+    y_fit = m * x_fit + b
+    label = f"y = {m:.3g}x {b:.3g}\n$R^2$ = {r2:.2f}; p = {pval:.2g}"
+    ax.plot(x_fit, y_fit, '-', color='tab:red', label=label)
+
+    ax.legend(loc='upper left', framealpha=0.8, fancybox=True)
+
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\PaCE_2022\ESSD special issue\Viet_et_al_2025\Review_answer/Review_resources/cpc_intercomp.png",
             dpi=600, bbox_inches='tight')
+
