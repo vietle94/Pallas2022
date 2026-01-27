@@ -167,7 +167,7 @@ for file in bme_path:
     df = df.set_index('datetime').resample('s').interpolate('linear').reset_index() # bme missing data once a while
     df['winch_contamination'] = 0
     bme_time = pd.to_datetime(file[-18:-10])
-    if bme_time < pd.Timestamp('20220929'):
+    if bme_time < pd.Timestamp('20220927'):
         df.loc[df['height_bme (m)'] < 200, 'winch_contamination'] = 1
     bme = pd.concat([bme, df], ignore_index=True)
 
@@ -214,6 +214,8 @@ for i, row in flight_time.iterrows():
     df_ = df_.reset_index(drop=True)
     cloud = mcda_preprocess.cloudmask(df_)
     df_.loc[~cloud, ['Nd_mcda (cm-3)', 'LWC_mcda (g/m3)', 'MVD_mcda (um)', 'ED_mcda (um)']] = -9999.9
+    df_.loc[~cloud & (df_['rh_bme (%)'] > 99.9), 'rh_bme (%)'] = -9999.9
+    df_.loc[df_['rh_bme (%)'] < 0, 'rh_pops (%)'] = -9999.9
     df_ = df_.fillna(-9999.9)
     save_time = df_.iloc[0].datetime.strftime("%Y%m%d.%H%M")
     df_ = df_.rename(columns={'datetime': 'datetime (utc)'})
