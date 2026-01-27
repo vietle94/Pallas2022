@@ -28,14 +28,16 @@ for var in variable:
 variable = ['LWC_mcda (g/m3)', 'MVD_mcda (um)', 'ED_mcda (um)']
 
 for var in variable:
-    print(f"{var}: {df[var].median():.5f}")
+    print(f"{var}: {df[var].median():.3f}", f"{df[var].quantile(0.25):.3f}", f"{df[var].quantile(0.75):.3f}")
 # %%
 cloud = ~np.isnan(df["LWC_mcda (g/m3)"])
 variable = ["N_conc_cpc (cm-3)", "N_conc_pops (cm-3)", 'Nd_mcda (cm-3)']
 
 for var in variable:
-    print(f"{var}: {df.loc[~cloud, var].median():.5f}")
+    print(f"{var}: {df.loc[~cloud, var].median():.3f}", f"{df.loc[~cloud, var].quantile(0.25):.3f}", f"{df.loc[~cloud, var].quantile(0.75):.3f}")
     
 for var in variable:
-    print(f"{var}: {df.loc[cloud, var].median():.5f}")
+    print(f"{var}: {df.loc[cloud, var].median():.3f}", f"{df.loc[cloud, var].quantile(0.25):.3f}", f"{df.loc[cloud, var].quantile(0.75):.3f}")
 
+
+# %%
