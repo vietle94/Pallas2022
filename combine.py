@@ -8,7 +8,7 @@ from functools import reduce
 import numpy as np
 import metpy.calc as mpcalc
 from metpy.units import units
-
+ 
 # %%
 
 def preprocess_mcda(file, size):
@@ -165,10 +165,10 @@ bme = pd.DataFrame({})
 for file in bme_path:
     df = bme_preprocess.preprocess_bme(file)
     df = df.set_index('datetime').resample('s').interpolate('linear').reset_index() # bme missing data once a while
-    df['winch_contamination'] = 0
-    bme_time = pd.to_datetime(file[-18:-10])
-    if bme_time < pd.Timestamp('20220927'):
-        df.loc[df['height_bme (m)'] < 200, 'winch_contamination'] = 1
+    # df['winch_contamination'] = 0
+    # bme_time = pd.to_datetime(file[-18:-10])
+    # if bme_time < pd.Timestamp('20220929'):
+    #     df.loc[df['height_bme (m)'] < 200, 'winch_contamination'] = 1
     bme = pd.concat([bme, df], ignore_index=True)
 
 cpc = pd.concat([cpc_preprocess.preprocess_cpc(x) for x in cpc_path])
@@ -200,12 +200,33 @@ df = reduce(lambda left,right: pd.merge(left,right,on=['datetime'],
         how='outer', sort=True),
             [bme, cpc, pops, mcda])
 df = df.dropna(subset=["press_bme (hPa)"])
-df = df.fillna(-9999.9)
+# df = df.fillna(-9999.9)
 
 for i, row in flight_time.iterrows():
     df.loc[df['height_bme (m)'] < 0, 'height_bme (m)'] = 0
     df_ = df[((df['datetime'] > row['start']) & (df['datetime'] < row['end']))].copy()
+    df_ = df_.reset_index(drop=True)
     df_['datetime'] = df_['datetime'] - pd.Timedelta(hours=2) # we used winter time even though it was summer
+    if df_.loc[0, 'datetime'] < pd.Timestamp('20220929'):
+        labels = [x for x in df.columns if '_pops' in x or '_cpc' in x]
+        df_['direction'] = "descent"
+        df_.loc[:df_["height_bme (m)"].argmax(), 'direction'] = "ascent"
+        for i in ["descent", "ascent"]:
+            Q1 = df_.loc[((df_['direction'] == i) & (df_['height_bme (m)'] < 200) & (df_['height_bme (m)'] > 10)),
+            'N_conc_cpc (cm-3)'].quantile(0.25)
+            Q3 = df_.loc[((df_['direction'] == i) & (df_['height_bme (m)'] < 200) & (df_['height_bme (m)'] > 10)),
+            'N_conc_cpc (cm-3)'].quantile(0.75)
+            IQR = Q3 - Q1
+            lower = Q1 - 1.5 * IQR
+            upper = Q3 + 1.5 * IQR
+
+            upper_mask = (df_["N_conc_cpc (cm-3)"] > upper) & (df_["direction"] == i) & (df_['height_bme (m)'] < 200)
+            lower_mask = (df_["N_conc_cpc (cm-3)"] < lower) & (df_["direction"] == i) & (df_['height_bme (m)'] < 200)
+
+            df_.loc[upper_mask, labels] = np.nan
+            df_.loc[lower_mask, labels] = np.nan
+        df_ = df_.drop("direction", axis=1)
+
     rh_pops = calc_rh(df_['temp_pops (C)'].to_numpy(), calc_dewpoint(df_['temp_bme (C)'].to_numpy(), 
                             df_['rh_bme (%)'].to_numpy()))
     temp_pops_index = df_.columns.get_loc('temp_pops (C)')
@@ -221,4 +242,5 @@ for i, row in flight_time.iterrows():
     df_ = df_.rename(columns={'datetime': 'datetime (utc)'})
     df_.to_csv(
             save_path + 'FMI.TBS.b1.' + save_time + '.csv', index=False)
+
     print(f'File {save_time} saved')

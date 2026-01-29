@@ -88,7 +88,6 @@ file_list = glob.glob(file_path + '*.csv')
 for file in file_list:
     df = pd.read_csv(file)
     df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
-    df = df[df['winch_contamination'] < 1]
     df = df.reset_index(drop=True)
     df = df.replace(-9999.9, np.nan)
     fig, _ = plot_quicklook(df)
