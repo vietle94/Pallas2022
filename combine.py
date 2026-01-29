@@ -122,7 +122,7 @@ def preprocess_mcda(file, size):
         top, bottom, out=np.zeros_like(top), where=bottom != 0
     )
     # Drop columns
-    df = df.drop(["pcount_mcda", "pm4_mcda", "pmtot_mcda"], axis=1)
+    df = df.drop(["pcount_mcda", "pm1_mcda", "pm25_mcda", "pm4_mcda", "pm10_mcda", "pmtot_mcda"], axis=1)
     return df
 
 
