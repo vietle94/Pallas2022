@@ -26,17 +26,13 @@ balloon["datetime (utc)"] = pd.to_datetime(balloon["datetime (utc)"])
 balloon.rename(columns={"datetime (utc)": "datetime"}, inplace=True)
 balloon.replace(-9999.9, np.nan, inplace=True)
 balloon = balloon.set_index('datetime').resample('1min').mean().reset_index()
-balloon = balloon[np.abs(balloon['height_bme (m)']-290) < 50]
+balloon = balloon[np.abs(balloon['height_bme (m)']-290) < 40]
 
 # %%
 # df = station.merge(balloon, on='datetime', how='inner').merge(station_dmps, on='datetime', how='inner')
 df = balloon.merge(station, on='datetime', how='inner')
 # df_inter = df[np.abs(df['press_bme (hPa)'] - df['P']) < 5]
 df_inter = df.copy()
-
-# %%
-
-
 
 # %%
 fig, ax = plt.subplots(figsize=(4.5, 4), constrained_layout=True)
@@ -47,8 +43,8 @@ ax.set_aspect('equal', 'box')
 ax.set_xlabel(r"Station temperature (°C)")
 
 # Plot 1:1 line
-x_11 = np.array([-5, 15])
-ax.plot(x_11, x_11, 'k--', alpha=0.5, label='1:1 line')
+# x_11 = np.array([-5, 15])
+# ax.plot(x_11, x_11, 'k--', alpha=0.5, label='1:1 line')
 
 # Compute and display fit, R², and p-value
 _x = df_inter['T'].to_numpy()
@@ -79,16 +75,14 @@ fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\PaCE_2022\ESSD special i
 
 # %%
 df_rh = df_inter[~df_inter['ED_mcda (um)'].notna()]
+df_rh = df_rh[df_rh['RH'] <= 90]
+df_rh = df_rh[df_rh['rh_bme (%)'] <= 90]
 fig, ax = plt.subplots(figsize=(4.5, 4), constrained_layout=True)
 ax.plot(df_rh['RH'], df_rh['rh_bme (%)'], '.')
 ax.set_ylabel(r"Payload relative humidity (%)")
 ax.grid()
 ax.set_aspect('equal', 'box')
 ax.set_xlabel(r"Station relative humidity (%)")
-
-# Plot 1:1 line
-x_11 = np.array([60, 100])
-ax.plot(x_11, x_11, 'k--', alpha=0.5, label='1:1 line')
     
 # Compute and display fit, R², and p-value
 _x = df_rh['RH'].to_numpy()
@@ -106,12 +100,12 @@ if mask.any():
     pval = res.pvalue
 
     # Plot best-fit line across the same span as 1:1
-    x_fit = np.array([60, 100])
+    x_fit = np.array([60, 90])
     y_fit = m * x_fit + b
     label = f"y = {m:.3g}x {b:.3g}\n$R^2$ = {r2:.2f}; p = {pval:.2g}"
     ax.plot(x_fit, y_fit, '-', color='tab:red', label=label)
 
-    ax.legend(loc='upper left', framealpha=0.8, fancybox=True)
+    ax.legend(loc='lower left', framealpha=0.8, fancybox=True)
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\PaCE_2022\ESSD special issue\Viet_et_al_2025\Review_answer/Review_resources/rh_intercomp.png",
             dpi=600, bbox_inches='tight')
 # %%
