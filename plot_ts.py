@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LogNorm
 import json
-from UAVision import preprocess
 import string
 
 data_path = r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Processed_data/'
@@ -12,38 +11,38 @@ with open('mcda_midbin_all.txt', 'r') as file:
     mcda_midbin_all = json.loads(file.read())
 
 # %%
-pops_binedges = np.loadtxt('pops_binedges.txt')
-pops_midbin = (pops_binedges[1:] + pops_binedges[:-1])/2
+# pops_binedges = np.loadtxt('pops_binedges.txt')
+# pops_midbin = (pops_binedges[1:] + pops_binedges[:-1])/2
 
-fig, ax = plt.subplots(2, 21, sharey='row', sharex='col', figsize=(10, 6))
-fig.subplots_adjust(wspace=0, hspace=0)
+# fig, ax = plt.subplots(2, 21, sharey='row', sharex='col', figsize=(10, 6))
+# fig.subplots_adjust(wspace=0, hspace=0)
 
-for file, ax0_, (i, ax_) in zip(glob.glob(data_path + '*.csv'),
-                          ax[0, :].flatten(),
-                          enumerate(ax[1, :].flatten())):
-    df = pd.read_csv(file)
-    df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
-    df.replace(-9999.9, np.nan, inplace=True)
+# for file, ax0_, (i, ax_) in zip(glob.glob(data_path + '*.csv'),
+#                           ax[0, :].flatten(),
+#                           enumerate(ax[1, :].flatten())):
+#     df = pd.read_csv(file)
+#     df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
+#     df.replace(-9999.9, np.nan, inplace=True)
 
-    ax0_.plot(df['datetime (utc)'], df['N_conc_cpc(cm-3)'], '.')
-    ax0_.grid()
-    ax0_.set_yscale('log')
+#     ax0_.plot(df['datetime (utc)'], df['N_conc_cpc (cm-3)'], '.')
+#     ax0_.grid()
+#     ax0_.set_yscale('log')
 
-    p = ax_.pcolormesh(df['datetime (utc)'],
-                            pops_midbin,
-                            df[[x for x in df.columns if '_pops (dN/dlogDp)' in x]].T,
-                            norm=LogNorm(vmax=10, vmin=0.01),
-                            cmap='jet')
-    ax_.set_yscale('log')
-    ax_.set_xticks([])
-    # ax_.set_xlabel(f"#{i+1}")
-    ax_.set_xlabel(df.iloc[0].datetime.strftime('%d/%m\n %H:%M'), size=7)
+#     p = ax_.pcolormesh(df['datetime (utc)'],
+#                             pops_midbin,
+#                             df[[x for x in df.columns if '_pops (dN/dlogDp)' in x]].T,
+#                             norm=LogNorm(vmax=10, vmin=0.01),
+#                             cmap='jet')
+#     ax_.set_yscale('log')
+#     ax_.set_xticks([])
+#     # ax_.set_xlabel(f"#{i+1}")
+#     ax_.set_xlabel(df.iloc[0].datetime.strftime('%d/%m\n %H:%M'), size=7)
 
-ax[1, 0].set_ylabel(r'Size ($\mu m$)')
-ax[0, 0].set_ylabel(r'N_conc_cpc(cm-3)')
-fig.colorbar(p, ax=ax, orientation='horizontal', label=r'dN/dlogDp ($cm^{-3}$)', aspect=50)
-fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/pops_ts.png", dpi=600,
-            bbox_inches='tight')
+# ax[1, 0].set_ylabel(r'Size ($\mu m$)')
+# ax[0, 0].set_ylabel(r'N_conc_cpc(cm-3)')
+# fig.colorbar(p, ax=ax, orientation='horizontal', label=r'dN/dlogDp ($cm^{-3}$)', aspect=50)
+# fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/pops_ts.png", dpi=600,
+#             bbox_inches='tight')
 
 # %%
 fig, ax = plt.subplots(3, 21, sharey='row', sharex='col', figsize=(10, 6))
@@ -56,6 +55,8 @@ for file, ax_cpc, ax_pops, ax_mcda  in zip(glob.glob(data_path + '*.csv'),
     df = pd.read_csv(file)
     df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
     df.replace(-9999.9, np.nan, inplace=True)
+    # df = df[df['winch_contamination']==0]
+    df = df.reset_index(drop=True)
 
     ax_cpc.plot(df['datetime (utc)'], df['N_conc_cpc (cm-3)'], '.',
                 markeredgecolor='none', markersize=1.0)
@@ -138,11 +139,11 @@ for file, ax0, ax1, ax2, ax3  in zip(glob.glob(data_path + '*.csv'),
     df = pd.read_csv(file)
     df['datetime (utc)'] = pd.to_datetime(df['datetime (utc)'])
     df.replace(-9999.9, np.nan, inplace=True)
-    if df['datetime (utc)'][0] < pd.Timestamp('20221003', tz='UTC'):
+    if df['datetime (utc)'][0] < pd.Timestamp('20221003'):
         size = 'water_0.15-17'
     else:
         size = 'water_0.6-40'
-    cda_midbin = preprocess.mcda_midbin_all[size]
+    cda_midbin = mcda_midbin_all[size]
     cda_midbin = cda_midbin[81:]
     df.dropna(subset=[x for x in df.columns if '_mcda (dN/dlogDp)' in x], inplace=True)
     df.reset_index(drop=True, inplace=True)
@@ -153,7 +154,7 @@ for file, ax0, ax1, ax2, ax3  in zip(glob.glob(data_path + '*.csv'),
     ax0.set_xticks([])
     ax0.set_yscale('log')
 
-    p = ax3.pcolormesh(df.datetime, cda_midbin,
+    p = ax3.pcolormesh(df['datetime (utc)'], cda_midbin,
                          df[[x for x in df.columns if '_mcda (dN/dlogDp)' in x]].T,
                          norm=LogNorm(vmax=10, vmin=0.01), cmap='jet')
     ax3.set_yscale('log')
