@@ -156,7 +156,7 @@ for file, ax0, ax1, ax2, ax3  in zip(glob.glob(data_path + '*.csv'),
 
     p = ax3.pcolormesh(df['datetime (utc)'], cda_midbin,
                          df[[x for x in df.columns if '_mcda (dN/dlogDp)' in x]].T,
-                         norm=LogNorm(vmax=10, vmin=0.01), cmap='jet')
+                         norm=LogNorm(vmax=10, vmin=0.01))
     ax3.set_yscale('log')
     ax3.grid()
     ax3.set_xlabel(df['datetime (utc)'][0].strftime('%d/%m\n %H:%M'), size=7)

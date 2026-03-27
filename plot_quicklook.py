@@ -52,8 +52,7 @@ def plot_quicklook(df):
     p = ax['mcda'].pcolormesh(grp_avg['datetime (utc)'],
                               cda_midbin,
                               grp_avg[[x for x in df.columns if '_mcda (dN/dlogDp)' in x]].T,
-                              norm=LogNorm(vmax=10, vmin=0.01),
-                              cmap='jet')
+                              norm=LogNorm(vmax=10, vmin=0.01))
     ax['mcda'].set_yscale('log')
     ax['mcda'].set_ylabel(r'Size ($\mu m$)')
     cbar = fig.colorbar(p, ax=ax['mcda'])
@@ -62,8 +61,7 @@ def plot_quicklook(df):
     p = ax['pops'].pcolormesh(grp_avg['datetime (utc)'],
                              pops_midbin,
                              grp_avg[[x for x in df.columns if '_pops (dN/dlogDp)' in x]].T,
-                             norm=LogNorm(vmax=10, vmin=0.01),
-                             cmap='jet')
+                             norm=LogNorm(vmax=10, vmin=0.01))
     ax['pops'].set_yscale('log')
     ax['pops'].set_xlim(ax['mcda'].get_xlim())
     ax['pops'].set_ylabel(r'Size ($\mu m$)')
