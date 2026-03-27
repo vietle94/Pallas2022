@@ -53,10 +53,10 @@ df_inter = df.copy()
 # %%
 fig, ax = plt.subplots(figsize=(4.5, 4), constrained_layout=True)
 ax.plot(df_inter['total'], df_inter['N_conc_cpc (cm-3)'], '.')
-ax.set_ylabel(r"Payload CPC concentration $(cm^{-3})$")
+ax.set_ylabel(r"Payload CPC concentration $(\mathrm{cm}^{-3})$")
 ax.grid()
 ax.set_aspect('equal', 'box')
-ax.set_xlabel(r"Station DMPS concentration $(cm^{-3})$")
+ax.set_xlabel(r"Station DMPS concentration $(\mathrm{cm}^{-3})$")
 
 # Compute and display fit, R², and p-value
 _x = df_inter['total'].to_numpy()
@@ -72,11 +72,12 @@ if mask.any():
     b = res.intercept
     r2 = res.rvalue * res.rvalue
     pval = res.pvalue
+    p_text = "p < 0.05" if pval < 0.05 else f"p = {pval:.2g}"
 
     # Plot best-fit line across the same span as 1:1
     x_fit = np.array([0, 2500])
     y_fit = m * x_fit + b
-    label = f"y = {m:.3g}x {b:.3g}\n$R^2$ = {r2:.2f}; p = {pval:.2g}"
+    label = f"y = {m:.3g}x {b:.3g}\n$R^2$ = {r2:.2f}; {p_text}"
     ax.plot(x_fit, y_fit, '-', color='tab:red', label=label)
 
     ax.legend(loc='upper left', framealpha=0.8, fancybox=True)
