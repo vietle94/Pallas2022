@@ -83,9 +83,9 @@ for n, ax_ in enumerate(ax[:, 0].flatten()):
     ax_.text(-0.0, 1.05, '(' + string.ascii_lowercase[n] + ')',
         transform=ax_.transAxes, size=12)
 
-ax[0, 0].set_ylabel(r'$N$ ($cm^{-3}$)')
-ax[1, 0].set_ylabel(r'$N$ ($cm^{-3}$)')
-ax[2, 0].set_ylabel(r'$N_d$ ($cm^{-3}$)')
+ax[0, 0].set_ylabel(r'$N$ ($\mathrm{cm}^{-3}$)')
+ax[1, 0].set_ylabel(r'$N$ ($\mathrm{cm}^{-3}$)')
+ax[2, 0].set_ylabel(r'$N_d$ ($\mathrm{cm}^{-3}$)')
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/conc_ts.png", dpi=600,
             bbox_inches='tight')
 
@@ -121,9 +121,9 @@ for n, ax_ in enumerate(ax[:, 0].flatten()):
     ax_.text(-0.0, 1.05, '(' + string.ascii_lowercase[n] + ')',
         transform=ax_.transAxes, size=12)
     
-ax[0, 0].set_ylabel(r'$P$ $(hPa)$')
-ax[1, 0].set_ylabel(r'$T$ $(\degree C)$')
-ax[2, 0].set_ylabel(r'$RH$ $(\%)$')
+ax[0, 0].set_ylabel(r'$P$ ($\mathrm{hPa}$)')
+ax[1, 0].set_ylabel(r'$T$ (${}^\circ\mathrm{C}$)')
+ax[2, 0].set_ylabel(r'$RH$ ($\%$)')
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/meteorology_ts.png", dpi=600,
             bbox_inches='tight')
 
@@ -180,11 +180,11 @@ for n, ax_ in enumerate(ax[:, 0].flatten()):
     ax_.text(-0.0, 1.05, '(' + string.ascii_lowercase[n] + ')',
         transform=ax_.transAxes, size=12)
 
-fig.colorbar(p, ax=ax, orientation='horizontal', label=r'dN/dlogDp ($cm^{-3}$)', aspect=50, pad=0.05)
-ax[0, 0].set_ylabel(r'LWC $(gm^{-3})$')
-ax[1, 0].set_ylabel(r'MVD $(\mu m)$')
-ax[2, 0].set_ylabel(r'ED $(\mu m)$')
-ax[3, 0].set_ylabel(r'Size ($\mu m$)')
+fig.colorbar(p, ax=ax, orientation='horizontal', label=r'dN/dlogDp ($\mathrm{cm}^{-3}$)', aspect=50, pad=0.05)
+ax[0, 0].set_ylabel(r'LWC ($\mathrm{g\,m}^{-3}$)')
+ax[1, 0].set_ylabel(r'MVD ($\mu\mathrm{m}$)')
+ax[2, 0].set_ylabel(r'ED ($\mu\mathrm{m}$)')
+ax[3, 0].set_ylabel(r'Size ($\mu\mathrm{m}$)')
 
 fig.savefig(r"C:\Users\le\OneDrive - Ilmatieteen laitos\My_articles\2024\Pallas/cloud_properties_ts.png", dpi=600,
             bbox_inches='tight')
