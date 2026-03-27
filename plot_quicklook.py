@@ -44,7 +44,7 @@ def plot_quicklook(df):
     ax['RH'].legend()
 
     ax['cpc'].plot(df['datetime (utc)'], df['N_conc_cpc (cm-3)'], '.')
-    ax['cpc'].set_ylabel(r'$N$ ($cm^{-3}$)')
+    ax['cpc'].set_ylabel(r'$N$ ($\mathrm{cm}^{-3}$)')
     ax['cpc'].grid()
     ax['cpc'].set_yscale('log')
 
@@ -57,7 +57,7 @@ def plot_quicklook(df):
     ax['mcda'].set_yscale('log')
     ax['mcda'].set_ylabel(r'Size ($\mu m$)')
     cbar = fig.colorbar(p, ax=ax['mcda'])
-    cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$)', rotation=90)
+    cbar.ax.set_ylabel(r'dN/dlogDp ($\mathrm{cm}^{-3}$)', rotation=90)
 
     p = ax['pops'].pcolormesh(grp_avg['datetime (utc)'],
                              pops_midbin,
@@ -68,7 +68,7 @@ def plot_quicklook(df):
     ax['pops'].set_xlim(ax['mcda'].get_xlim())
     ax['pops'].set_ylabel(r'Size ($\mu m$)')
     cbar = fig.colorbar(p, ax=ax['pops'])
-    cbar.ax.set_ylabel(r'dN/dlogDp ($cm^{-3}$)', rotation=90)
+    cbar.ax.set_ylabel(r'dN/dlogDp ($\mathrm{cm}^{-3}$)', rotation=90)
 
     ax['cpc'].set_xlabel('Time (Hour, UTC)')
     ax['pops'].set_xlabel('Time (Hour, UTC)')
