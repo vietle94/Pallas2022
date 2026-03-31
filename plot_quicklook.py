@@ -43,7 +43,15 @@ def plot_quicklook(df):
     ax['RH'].grid()
     ax['RH'].legend()
 
-    ax['cpc'].plot(df['datetime (utc)'], df['N_conc_cpc (cm-3)'], '.')
+    if 'winch_contamination_severe' in df.columns:
+        no_contamination_mask = df['winch_contamination_severe'] == 0
+        ax['cpc'].plot(df.loc[no_contamination_mask, 'datetime (utc)'],
+                        df.loc[no_contamination_mask, 'N_conc_cpc (cm-3)'], '.')
+        ax['cpc'].plot(df.loc[~no_contamination_mask, 'datetime (utc)'],
+                        df.loc[~no_contamination_mask, 'N_conc_cpc (cm-3)'], '.', label="winch_contamination_severe")
+        ax['cpc'].legend()
+    else:
+        ax['cpc'].plot(df['datetime (utc)'], df['N_conc_cpc (cm-3)'], '.')
     ax['cpc'].set_ylabel(r'$N$ ($\mathrm{cm}^{-3}$)')
     ax['cpc'].grid()
     ax['cpc'].set_yscale('log')
@@ -61,7 +69,7 @@ def plot_quicklook(df):
     p = ax['pops'].pcolormesh(grp_avg['datetime (utc)'],
                              pops_midbin,
                              grp_avg[[x for x in df.columns if '_pops (dN/dlogDp)' in x]].T,
-                             norm=LogNorm(vmax=10, vmin=0.01))
+                             norm=LogNorm(vmax=1e3, vmin=0.01))
     ax['pops'].set_yscale('log')
     ax['pops'].set_xlim(ax['mcda'].get_xlim())
     ax['pops'].set_ylabel(r'Size ($\mu m$)')

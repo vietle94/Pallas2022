@@ -184,7 +184,7 @@ for file in mcda_path:
     mcda = pd.concat([mcda, df], ignore_index=True)
 
 flight_time = pd.read_csv(
-    r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Raw_data/ground_time.csv')
+    r'C:\Users\le\OneDrive - Ilmatieteen laitos\Campaigns\Pace2022\FMI balloon payload\Raw_data/all_time.csv')
 flight_time['start'] = pd.to_datetime(flight_time['start'])
 flight_time['end'] = pd.to_datetime(flight_time['end'])
 
@@ -201,32 +201,30 @@ df = reduce(lambda left,right: pd.merge(left,right,on=['datetime'],
             [bme, cpc, pops, mcda])
 df = df.dropna(subset=["press_bme (hPa)"])
 # df = df.fillna(-9999.9)
-
+labels = [x for x in df.columns if '_pops' in x or '_cpc' in x]
 for i, row in flight_time.iterrows():
     df.loc[df['height_bme (m)'] < 0, 'height_bme (m)'] = 0
     df_ = df[((df['datetime'] > row['start']) & (df['datetime'] < row['end']))].copy()
     df_ = df_.reset_index(drop=True)
     df_['datetime'] = df_['datetime'] - pd.Timedelta(hours=2) # we used winter time even though it was summer
     if df_.loc[0, 'datetime'] < pd.Timestamp('20220929'):
-        labels = [x for x in df.columns if '_pops' in x or '_cpc' in x]
         df_['direction'] = "descent"
+        df_["winch_contamination_severe"] = 0
         df_.loc[:df_["height_bme (m)"].argmax(), 'direction'] = "ascent"
         for i in ["descent", "ascent"]:
-            Q1 = df_.loc[((df_['direction'] == i) & (df_['height_bme (m)'] < 200) & (df_['height_bme (m)'] > 10)),
-            'N_conc_cpc (cm-3)'].quantile(0.25)
-            Q3 = df_.loc[((df_['direction'] == i) & (df_['height_bme (m)'] < 200) & (df_['height_bme (m)'] > 10)),
-            'N_conc_cpc (cm-3)'].quantile(0.75)
+            Q1 = np.log10(df_.loc[((df_['direction'] == i) & (df_['height_bme (m)'] < 50) & (df_['height_bme (m)'] > 10)),
+            'N_conc_cpc (cm-3)']).quantile(0.25)
+            Q3 = np.log10(df_.loc[((df_['direction'] == i) & (df_['height_bme (m)'] < 50) & (df_['height_bme (m)'] > 10)),
+            'N_conc_cpc (cm-3)']).quantile(0.75)
             IQR = Q3 - Q1
             lower = Q1 - 1.5 * IQR
             upper = Q3 + 1.5 * IQR
 
-            upper_mask = (df_["N_conc_cpc (cm-3)"] > upper) & (df_["direction"] == i) & (df_['height_bme (m)'] < 200)
-            lower_mask = (df_["N_conc_cpc (cm-3)"] < lower) & (df_["direction"] == i) & (df_['height_bme (m)'] < 200)
-
-            df_.loc[upper_mask, labels] = np.nan
+            upper_mask = (np.log10(df_["N_conc_cpc (cm-3)"]) > upper) & (df_["direction"] == i) & (df_['height_bme (m)'] < 50)
+            lower_mask = (np.log10(df_["N_conc_cpc (cm-3)"]) < lower) & (df_["direction"] == i) & (df_['height_bme (m)'] < 20)
             df_.loc[lower_mask, labels] = np.nan
+            df_.loc[upper_mask, "winch_contamination_severe"] = 1
         df_ = df_.drop("direction", axis=1)
-
     rh_pops = calc_rh(df_['temp_pops (C)'].to_numpy(), calc_dewpoint(df_['temp_bme (C)'].to_numpy(), 
                             df_['rh_bme (%)'].to_numpy()))
     temp_pops_index = df_.columns.get_loc('temp_pops (C)')
@@ -240,6 +238,7 @@ for i, row in flight_time.iterrows():
     df_ = df_.fillna(-9999.9)
     save_time = df_.iloc[0].datetime.strftime("%Y%m%d.%H%M")
     df_ = df_.rename(columns={'datetime': 'datetime (utc)'})
+    df_ = df_.iloc[:-1] # drop last row which might be trailing 0
     df_.to_csv(
             save_path + 'FMI.TBS.b1.' + save_time + '.csv', index=False)
 
