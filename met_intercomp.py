@@ -37,10 +37,10 @@ df_inter = df.copy()
 # %%
 fig, ax = plt.subplots(figsize=(4.5, 4), constrained_layout=True)
 ax.plot(df_inter['T'], df_inter['temp_bme (C)'], '.')
-ax.set_ylabel(r"Payload temperature (°C)")
+ax.set_ylabel(r"Payload temperature (${}^\circ\mathrm{C}$)")
 ax.grid()
 ax.set_aspect('equal', 'box')
-ax.set_xlabel(r"Station temperature (°C)")
+ax.set_xlabel(r"Station temperature (${}^\circ\mathrm{C}$)")
 
 # Plot 1:1 line
 # x_11 = np.array([-5, 15])
@@ -65,7 +65,7 @@ if mask.any():
     # Plot best-fit line across the same span as 1:1
     x_fit = np.array([-5, 15])
     y_fit = m * x_fit + b
-    label = f"y = {m:.3g}x {b:.3g}\n$R^2$ = {r2:.2f}; {p_text}"
+    label = f"y = {m:.3g}x {b:+.3g}\n$R^2$ = {r2:.2f}; {p_text}"
     ax.plot(x_fit, y_fit, '-', color='tab:red', label=label)
 
     ax.legend(loc='upper left', framealpha=0.8, fancybox=True)
@@ -80,10 +80,10 @@ df_rh = df_rh[df_rh['RH'] <= 90]
 df_rh = df_rh[df_rh['rh_bme (%)'] <= 90]
 fig, ax = plt.subplots(figsize=(4.5, 4), constrained_layout=True)
 ax.plot(df_rh['RH'], df_rh['rh_bme (%)'], '.')
-ax.set_ylabel(r"Payload relative humidity (%)")
+ax.set_ylabel(r"Payload relative humidity ($\%$)")
 ax.grid()
 ax.set_aspect('equal', 'box')
-ax.set_xlabel(r"Station relative humidity (%)")
+ax.set_xlabel(r"Station relative humidity ($\%$)")
     
 # Compute and display fit, R², and p-value
 _x = df_rh['RH'].to_numpy()
@@ -104,7 +104,7 @@ if mask.any():
     # Plot best-fit line across the same span as 1:1
     x_fit = np.array([60, 90])
     y_fit = m * x_fit + b
-    label = f"y = {m:.3g}x {b:.3g}\n$R^2$ = {r2:.2f}; {p_text}"
+    label = f"y = {m:.3g}x {b:+.3g}\n$R^2$ = {r2:.2f}; {p_text}"
     ax.plot(x_fit, y_fit, '-', color='tab:red', label=label)
 
     ax.legend(loc='lower left', framealpha=0.8, fancybox=True)
