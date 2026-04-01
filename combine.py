@@ -202,11 +202,12 @@ df = reduce(lambda left,right: pd.merge(left,right,on=['datetime'],
 df = df.dropna(subset=["press_bme (hPa)"])
 # df = df.fillna(-9999.9)
 labels = [x for x in df.columns if '_pops' in x or '_cpc' in x]
+
+df.loc[df['height_bme (m)'] < 0, 'height_bme (m)'] = 0
+df['datetime'] = df['datetime'] - pd.Timedelta(hours=2) # we used winter time even though it was summer
 for i, row in flight_time.iterrows():
-    df.loc[df['height_bme (m)'] < 0, 'height_bme (m)'] = 0
     df_ = df[((df['datetime'] > row['start']) & (df['datetime'] < row['end']))].copy()
     df_ = df_.reset_index(drop=True)
-    df_['datetime'] = df_['datetime'] - pd.Timedelta(hours=2) # we used winter time even though it was summer
     if df_.loc[0, 'datetime'] < pd.Timestamp('20220929'):
         df_['direction'] = "descent"
         df_["winch_contamination_severe"] = 0
