@@ -1,5 +1,7 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+import string
 # %%
 # Briggs 1969
 def plume_rise(F, u, x):
@@ -114,7 +116,7 @@ x = np.arange(1, 1e3, 10)
 z = np.arange(1, 1e3, 10)
 X, Z = np.meshgrid(x, z)
 Q = 1
-u = 1
+u = 10
 Ts = 600
 Ta = 290
 vs = 20
@@ -123,18 +125,43 @@ F = buoyancy_flux(Ts, Ta, vs, d)
 plume_rise_values = plume_rise(F, u, X)
 sigma_y_values = Gaussian_plume_sigma_y(X)
 sigma_z_values = Gaussian_plume_sigma_z(X)
-concentration_values = Gaussian_plume_concentration(Q, u, sigma_y_values, sigma_z_values,
-                                                    0, Z, plume_rise_values)
 
 # %%
-fig, ax = plt.subplots()
-p = ax.pcolormesh(X, Z, concentration_values, shading='auto',
+concentration_values = Gaussian_plume_concentration(Q, u, sigma_y_values, sigma_z_values,
+                                                    0, Z, plume_rise_values)
+fig, ax = plt.subplots(1, 3, sharex=True, sharey=True,
+        figsize=(9, 3), constrained_layout=True)
+p = ax[0].pcolormesh(X, Z, concentration_values, shading='auto',
                  norm=LogNorm(vmin=1e-6, vmax=1e-3))
-ax.set_xlim(20, None)
-fig.colorbar(p, ax=ax, label='Relative concentration (normalized to source)')
-ax.set_xlabel('Downwind distance (m)')
-ax.set_ylabel('Height above ground (m)')
-ax.set_title('Gaussian plume estimation')
+ax[0].set_xlim(20, None)
+ax[0].set_xlabel('Downwind distance (m)')
+ax[0].set_ylabel('Height above ground (m)')
+
+concentration_values = Gaussian_plume_concentration(Q, u, sigma_y_values, sigma_z_values,
+                                                    50, Z, plume_rise_values)
+p = ax[1].pcolormesh(X, Z, concentration_values, shading='auto',
+                 norm=LogNorm(vmin=1e-6, vmax=1e-3))
+ax[1].set_xlim(20, None)
+ax[1].set_xlabel('Downwind distance (m)')
+
+concentration_values = Gaussian_plume_concentration(Q, u, sigma_y_values, sigma_z_values,
+                                                    100, Z, plume_rise_values)
+p = ax[2].pcolormesh(X, Z, concentration_values, shading='auto',
+                 norm=LogNorm(vmin=1e-6, vmax=1e-3))
+ax[2].set_xlim(20, None)
+ax[2].set_xlabel('Downwind distance (m)')
+
+fig.colorbar(p, ax=ax, label='Relative concentration \n(normalized to source)')
+
+for n, ax_ in enumerate(ax.flatten()):
+    ax_.grid()
+    ax_.text(
+        -0.0,
+        1.05,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
 fig.savefig(fr"C:\Users\le\OneDrive - Ilmatieteen laitos\PaCE_2022\ESSD special issue\Viet_et_al_2025\Ver2\Editor_reply/gaussian_plume_{u}.png",
             dpi=300, bbox_inches='tight')
 # %%
