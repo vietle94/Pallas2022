@@ -43,12 +43,12 @@ def plot_quicklook(df):
     ax['RH'].grid()
     ax['RH'].legend()
 
-    if 'winch_contamination_severe' in df.columns:
-        no_contamination_mask = df['winch_contamination_severe'] == 0
+    if 'winch_contamination' in df.columns:
+        no_contamination_mask = df['winch_contamination'] == 0
         ax['cpc'].plot(df.loc[no_contamination_mask, 'datetime (utc)'],
                         df.loc[no_contamination_mask, 'N_conc_cpc (cm-3)'], '.')
         ax['cpc'].plot(df.loc[~no_contamination_mask, 'datetime (utc)'],
-                        df.loc[~no_contamination_mask, 'N_conc_cpc (cm-3)'], '.', label="winch_contamination_severe")
+                        df.loc[~no_contamination_mask, 'N_conc_cpc (cm-3)'], '.', label="winch_contamination")
         ax['cpc'].legend()
     else:
         ax['cpc'].plot(df['datetime (utc)'], df['N_conc_cpc (cm-3)'], '.')

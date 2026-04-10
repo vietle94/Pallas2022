@@ -210,7 +210,7 @@ for i, row in flight_time.iterrows():
     df_ = df_.reset_index(drop=True)
     if df_.loc[0, 'datetime'] < pd.Timestamp('20220929'):
         df_['direction'] = "descent"
-        df_["winch_contamination_severe"] = 0
+        df_["winch_contamination"] = 0
         df_.loc[:df_["height_bme (m)"].argmax(), 'direction'] = "ascent"
         for i in ["descent", "ascent"]:
             Q1 = np.log10(df_.loc[((df_['direction'] == i) & (df_['height_bme (m)'] < 50) & (df_['height_bme (m)'] > 10)),
@@ -224,7 +224,7 @@ for i, row in flight_time.iterrows():
             upper_mask = (np.log10(df_["N_conc_cpc (cm-3)"]) > upper) & (df_["direction"] == i) & (df_['height_bme (m)'] < 50)
             lower_mask = (np.log10(df_["N_conc_cpc (cm-3)"]) < lower) & (df_["direction"] == i) & (df_['height_bme (m)'] < 20)
             df_.loc[lower_mask, labels] = np.nan
-            df_.loc[upper_mask, "winch_contamination_severe"] = 1
+            df_.loc[upper_mask, "winch_contamination"] = 1
         df_ = df_.drop("direction", axis=1)
     rh_pops = calc_rh(df_['temp_pops (C)'].to_numpy(), calc_dewpoint(df_['temp_bme (C)'].to_numpy(), 
                             df_['rh_bme (%)'].to_numpy()))
