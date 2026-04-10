@@ -116,9 +116,9 @@ x = np.arange(1, 1e3, 10)
 z = np.arange(1, 1e3, 10)
 X, Z = np.meshgrid(x, z)
 Q = 1
-u = 10
+u = 1
 Ts = 600
-Ta = 290
+Ta = 280
 vs = 20
 d = 0.05
 F = buoyancy_flux(Ts, Ta, vs, d)
@@ -164,4 +164,3 @@ for n, ax_ in enumerate(ax.flatten()):
     )
 fig.savefig(fr"C:\Users\le\OneDrive - Ilmatieteen laitos\PaCE_2022\ESSD special issue\Viet_et_al_2025\Ver2\Editor_reply/gaussian_plume_{u}.png",
             dpi=300, bbox_inches='tight')
-# %%
