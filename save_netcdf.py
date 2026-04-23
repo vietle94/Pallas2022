@@ -56,7 +56,7 @@ for file in csv_files:
                     'press_cpc (hPa)',
                     'N_conc_pops (cm-3)',
                     'press_pops (hPa)',
-                    'flow_rate_pops (l/m)',
+                    'flow_rate_pops (cm3/s)',
                     'temp_pops (C)',
                     'rh_pops (%)',
                     'conc_pops (cm-3)',
@@ -66,7 +66,8 @@ for file in csv_files:
                     'Nd_mcda (cm-3)',
                     'LWC_mcda (g/m3)',
                     'MVD_mcda (um)',
-                    'ED_mcda (um)']]
+                    'ED_mcda (um)',
+                    'winch_contamination']]
     df_xr = df_xr.rename({x:re.sub(r" \(.*\)", "", x) for x in list(df_xr.data_vars)})
 
     df_xr['datetime'].attrs = {'long_name': 'datetime in UTC', '_FillValue': -9999.9, 'processing_level': 'b1'}
@@ -91,6 +92,7 @@ for file in csv_files:
     df_xr['LWC_mcda'].attrs = {'units': 'g m−3', 'long_name': 'Liquid water content measured by mCDA', '_FillValue': -9999.9, 'processing_level': 'b1'}
     df_xr['MVD_mcda'].attrs = {'units': 'µm', 'long_name': 'Median volume diameter measured by mCDA', '_FillValue': -9999.9, 'processing_level': 'b1'}
     df_xr['ED_mcda'].attrs = {'units': 'µm', 'long_name': 'Effective droplet diameter measured by mCDA', '_FillValue': -9999.9, 'processing_level': 'b1'}
+    df_xr['winch_contamination'].attrs = {'units': '', 'long_name': 'Winch contamination flag', '_FillValue': -9999.9, 'processing_level': 'b1'}
 
     df_xr.attrs['platform_name'] = platform
     df_xr.attrs['institution'] = "Finnish Meteorological Institute"

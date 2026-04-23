@@ -208,9 +208,9 @@ df['datetime'] = df['datetime'] - pd.Timedelta(hours=2) # we used winter time ev
 for i, row in flight_time.iterrows():
     df_ = df[((df['datetime'] > row['start']) & (df['datetime'] < row['end']))].copy()
     df_ = df_.reset_index(drop=True)
+    df_["winch_contamination"] = 0
     if df_.loc[0, 'datetime'] < pd.Timestamp('20220929'):
         df_['direction'] = "descent"
-        df_["winch_contamination"] = 0
         df_.loc[:df_["height_bme (m)"].argmax(), 'direction'] = "ascent"
         for i in ["descent", "ascent"]:
             Q1 = np.log10(df_.loc[((df_['direction'] == i) & (df_['height_bme (m)'] < 50) & (df_['height_bme (m)'] > 10)),
